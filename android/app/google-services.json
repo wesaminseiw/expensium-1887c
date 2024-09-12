@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "292986843763",
+    "project_id": "expensium-1887c",
+    "storage_bucket": "expensium-1887c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:292986843763:android:61b3f6f0affc7ae1cc7006",
+        "android_client_info": {
+          "package_name": "com.example.expensium"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCk7w0Kh0JB41vh4PAgslA-Y3f-rvkInTQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
