@@ -7,6 +7,10 @@ Widget textField({
   void Function()? onTap,
   bool? readOnly,
   bool? isObscure,
+  bool? filled,
+  Color? fillColor,
+  BorderSide? borderSide,
+  TextAlign? textAlign,
 }) =>
     Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -16,9 +20,14 @@ Widget textField({
         readOnly: readOnly ?? false,
         controller: controller,
         keyboardType: keyboardType ?? TextInputType.text,
+        textAlign: textAlign ?? TextAlign.start,
         decoration: InputDecoration(
           hintText: hintText,
-          border: const OutlineInputBorder(),
+          filled: filled ?? false,
+          fillColor: fillColor ?? Colors.white,
+          border: OutlineInputBorder(
+            borderSide: borderSide ?? const BorderSide(),
+          ),
         ),
       ),
     );

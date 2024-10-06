@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -25,40 +27,29 @@ class UserActionsCubit extends Cubit<UserActionsState> {
     try {
       await deleteUserData();
       await FirebaseAuth.instance.currentUser!.delete();
+      await FirebaseAuth.instance.currentUser?.reload();
       emit(UserActionsDeleteUserSuccessState());
+      log("User deleted successfully.");
     } catch (e) {
       emit(UserActionsDeleteUserFailureState(e.toString()));
     }
   }
 
   Future<void> deleteUserData() async {
+    final uid = FirebaseAuth.instance.currentUser!.uid;
+    final firestore = FirebaseFirestore.instance;
     emit(UserActionsDeleteUserDataInitialState());
     try {
-      final _uid = FirebaseAuth.instance.currentUser!.uid;
-      final _firestore = FirebaseFirestore.instance;
-
-      final budget = _firestore
-          .collection('transactions')
-          .doc(_uid)
-          .collection('budget')
-          .doc('budget');
+      final budget = firestore.collection('transactions').doc(uid).collection('budget').doc('budget');
       await budget.delete();
-      final incomesSnapshot = await _firestore
-          .collection('transactions')
-          .doc(_uid)
-          .collection('incomes')
-          .get();
+      final incomesSnapshot = await firestore.collection('transactions').doc(uid).collection('incomes').get();
 
       // Delete each document in the 'incomes' subcollection
       for (var doc in incomesSnapshot.docs) {
         await doc.reference.delete();
       }
 
-      final expensesSnapshot = await _firestore
-          .collection('transactions')
-          .doc(_uid)
-          .collection('expenses')
-          .get();
+      final expensesSnapshot = await firestore.collection('transactions').doc(uid).collection('expenses').get();
 
       // Delete each document in the 'incomes' subcollection
       for (var doc in expensesSnapshot.docs) {
@@ -71,42 +62,17 @@ class UserActionsCubit extends Cubit<UserActionsState> {
     }
   }
 
-  // // Deletes user data from Firestore and the user account from Firebase Auth
-  // Future<void> _deleteUserData() async {
-  //   try {
-  //     final _uid = FirebaseAuth.instance.currentUser!.uid;
-  //     final _firestore = FirebaseFirestore.instance;
-
-  //     // Delete user's data from Firestore
-  //     await _firestore.collection('transactions').doc(_uid).delete();
-  //     log('========= DELETED USER DATA =========');
-
-  //     // Delete Firebase Auth user
-  //     await FirebaseAuth.instance.currentUser!.delete();
-  //     log('========= DELETED USER (NAVIGATING TO LOGIN) =========');
-  //   } catch (e) {
-  //     log('Error deleting user data: $e');
-  //     throw e; // Rethrow error to be handled in deleteUser method
-  //   }
-  // }
-
   // Check email verification status
   Future<void> checkEmailVerification(BuildContext context) async {
     try {
       await FirebaseAuth.instance.currentUser!.reload();
       FirebaseAuth.instance.authStateChanges().listen((User? user) {
         if (user == null) {
-          Navigator.pushNamedAndRemoveUntil(
-            context,
-            '/login',
-            (route) => false,
-          );
+          emit(UserActionsUserIsDeletedOrSignedOutState());
         } else if (!user.emailVerified) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Not verified yet!')),
-          );
+          emit(UserActionsNotVerifiedState());
         } else {
-          Navigator.pushReplacementNamed(context, '/add_budget');
+          emit(UserActionsVerifiedState());
         }
       });
     } catch (e) {

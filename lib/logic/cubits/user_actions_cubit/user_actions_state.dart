@@ -34,3 +34,10 @@ class UserActionsDeleteUserDataFailureState extends UserActionsState {
   final String error;
   UserActionsDeleteUserDataFailureState(this.error);
 }
+
+// verify user data states
+class UserActionsVerifiedState extends UserActionsState {}
+
+class UserActionsNotVerifiedState extends UserActionsState {}
+
+class UserActionsUserIsDeletedOrSignedOutState extends UserActionsState {}

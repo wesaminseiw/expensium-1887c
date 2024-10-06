@@ -9,18 +9,18 @@ import 'package:uuid/uuid.dart';
 part 'income_state.dart';
 
 class IncomeCubit extends Cubit<IncomeState> {
-  IncomeCubit() : super(AddIncomeInitialState(isLoading: false));
+  IncomeCubit() : super(const AddIncomeInitialState(isLoading: false));
 
   void addIncome({
     required String title,
     required TextEditingController amountController,
     required TextEditingController dateController,
   }) async {
-    final _firestore = FirebaseFirestore.instance;
-    final _auth = FirebaseAuth.instance;
-    final DateFormat _dateFormat = DateFormat('yyyy/MM/dd');
+    final firestore = FirebaseFirestore.instance;
+    final auth = FirebaseAuth.instance;
+    final DateFormat dateFormat = DateFormat('yyyy/MM/dd');
 
-    emit(AddIncomeLoadingState(isLoading: true));
+    emit(const AddIncomeLoadingState(isLoading: true));
 
     if (title.isNotEmpty && amountController.text.isNotEmpty) {
       try {
@@ -29,34 +29,26 @@ class IncomeCubit extends Cubit<IncomeState> {
         final double amount = amountInt.toDouble();
 
         // convert text controller to date
-        final _dateToDateTime = dateController.text;
-        final DateTime date = _dateFormat.parse(_dateToDateTime);
+        final dateToDateTime = dateController.text;
+        final DateTime date = dateFormat.parse(dateToDateTime);
         try {
-          String _id = const Uuid().v1();
-          var _incomes = _firestore
-              .collection('transactions')
-              .doc(_auth.currentUser!.uid)
-              .collection('incomes')
-              .doc(_id);
+          String id = const Uuid().v1();
+          var incomes = firestore.collection('transactions').doc(auth.currentUser!.uid).collection('incomes').doc(id);
 
           // Reference to the budget document
-          var _budget = _firestore
-              .collection('transactions')
-              .doc(_auth.currentUser!.uid)
-              .collection('budget')
-              .doc('budget');
+          var budget = firestore.collection('transactions').doc(auth.currentUser!.uid).collection('budget').doc('budget');
 
           // Fetch the current budget value
-          var budgetSnapshot = await _budget.get();
+          var budgetSnapshot = await budget.get();
           double currentBudget = budgetSnapshot.data()?['budget'] ?? 0;
 
           // Subtract the expense from the budget
           double updatedBudget = currentBudget + amount;
 
           // Add the expense to Firestore
-          await _incomes.set(
+          await incomes.set(
             Income(
-              id: _id,
+              id: id,
               title: title,
               amount: amount,
               date: date,
@@ -64,32 +56,31 @@ class IncomeCubit extends Cubit<IncomeState> {
           );
 
           // Update the budget in Firestore
-          await _budget.update({
+          await budget.update({
             'budget': updatedBudget,
           });
-          emit(AddIncomeSuccessState(isLoading: false));
+          await fetchWeeklyIncomes();
+          emit(const AddIncomeSuccessState(isLoading: false));
         } catch (e) {
-          emit(AddIncomeFailureState(isLoading: false));
+          emit(const AddIncomeFailureState(isLoading: false));
           print(e.toString());
         }
       } on FormatException {
-        emit(AddIncomeFailureEmptyFieldsState(isLoading: false));
+        emit(const AddIncomeFailureEmptyFieldsState(isLoading: false));
       }
     } else {
-      emit(AddIncomeFailureEmptyFieldsState(isLoading: false));
+      emit(const AddIncomeFailureEmptyFieldsState(isLoading: false));
     }
   }
 
   Future<List<Income>> fetchIncomes() async {
-    final _firestore = FirebaseFirestore.instance;
-    final _auth = FirebaseAuth.instance;
+    final firestore = FirebaseFirestore.instance;
+    final auth = FirebaseAuth.instance;
 
     try {
-      var incomesSnapshot = await _firestore
-          .collection('transactions')
-          .doc(_auth.currentUser!.uid)
-          .collection('incomes')
-          .get();
+      var incomesSnapshot = await firestore.collection('transactions').doc(auth.currentUser!.uid).collection('incomes').get();
+
+      await fetchWeeklyIncomes();
 
       return incomesSnapshot.docs.map((doc) {
         Map<String, dynamic> incomeData = doc.data();
@@ -110,40 +101,32 @@ class IncomeCubit extends Cubit<IncomeState> {
     required String incomeId,
     required double amount,
   }) async {
-    emit(DeleteIncomeLoadingState(isLoading: true));
+    emit(const DeleteIncomeLoadingState(isLoading: true));
 
     try {
-      final _firestore = FirebaseFirestore.instance;
-      final _auth = FirebaseAuth.instance;
+      final firestore = FirebaseFirestore.instance;
+      final auth = FirebaseAuth.instance;
 
-      if (_auth.currentUser == null) {
-        emit(DeleteIncomeFailureState(isLoading: false));
+      if (auth.currentUser == null) {
+        emit(const DeleteIncomeFailureState(isLoading: false));
         return;
       }
 
-      var income = _firestore
-          .collection('transactions')
-          .doc(_auth.currentUser!.uid)
-          .collection('incomes')
-          .doc(incomeId);
+      var income = firestore.collection('transactions').doc(auth.currentUser!.uid).collection('incomes').doc(incomeId);
 
       var incomeSnapshot = await income.get();
       if (!incomeSnapshot.exists) {
-        emit(DeleteIncomeFailureState(isLoading: false));
+        emit(const DeleteIncomeFailureState(isLoading: false));
         return;
       }
 
       // Reference to the budget document
-      var _budget = _firestore
-          .collection('transactions')
-          .doc(_auth.currentUser!.uid)
-          .collection('budget')
-          .doc('budget');
+      var budget = firestore.collection('transactions').doc(auth.currentUser!.uid).collection('budget').doc('budget');
 
-      var budgetSnapshot = await _budget.get();
+      var budgetSnapshot = await budget.get();
 
       if (!budgetSnapshot.exists) {
-        emit(DeleteIncomeFailureState(isLoading: false));
+        emit(const DeleteIncomeFailureState(isLoading: false));
         return;
       }
 
@@ -151,17 +134,57 @@ class IncomeCubit extends Cubit<IncomeState> {
       double updatedBudget = currentBudget - amount;
 
       // Update the budget value
-      await _budget.update({
+      await budget.update({
         'budget': updatedBudget,
       });
 
       // Delete the income document
       await income.delete();
 
-      emit(DeleteIncomeSuccessState(isLoading: false));
+      await fetchWeeklyIncomes();
+
+      emit(const DeleteIncomeSuccessState(isLoading: false));
     } catch (e) {
       print('Error deleting income: $e');
-      emit(DeleteIncomeFailureState(isLoading: false));
+      emit(const DeleteIncomeFailureState(isLoading: false));
+    }
+  }
+
+  Future<double> fetchWeeklyIncomes() async {
+    final firestore = FirebaseFirestore.instance;
+    final auth = FirebaseAuth.instance;
+
+    emit(const FetchWeeklyIncomeLoadingState(isLoading: true));
+    try {
+      // Get the current date and the start of the week (e.g., Sunday)
+      DateTime now = DateTime.now();
+      DateTime startOfWeek = now.subtract(Duration(days: now.weekday));
+      DateTime endOfWeek = startOfWeek.add(const Duration(days: 7));
+
+      var incomesSnapshot = await firestore
+          .collection('transactions')
+          .doc(auth.currentUser!.uid)
+          .collection('incomes')
+          .where('date', isGreaterThanOrEqualTo: startOfWeek)
+          .where('date', isLessThan: endOfWeek)
+          .get();
+
+      double totalIncomes = 0;
+      for (var doc in incomesSnapshot.docs) {
+        totalIncomes += doc.data()['amount'] as double;
+      }
+
+      emit(FetchWeeklyIncomeSuccessState(
+        isLoading: false,
+        totalIncomes: totalIncomes,
+      ));
+      return totalIncomes;
+    } catch (e) {
+      emit(FetchWeeklyIncomeFailureState(
+        isLoading: false,
+        errorMessage: e.toString(),
+      ));
+      return 0.00;
     }
   }
 }

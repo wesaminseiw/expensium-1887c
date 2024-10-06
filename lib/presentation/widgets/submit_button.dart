@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 Widget submitButton(
   BuildContext context, {
+  Color? buttonColor,
+  Color? textColor,
   required String label,
   required void Function() onTap,
 }) =>
@@ -11,16 +13,16 @@ Widget submitButton(
         onTap: onTap,
         child: Container(
           width: double.infinity,
-          height: 54,
+          height: 56,
           decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.primary,
+            color: buttonColor ?? Theme.of(context).colorScheme.primary,
             borderRadius: BorderRadius.circular(4),
           ),
           child: Center(
             child: Text(
               label,
-              style: const TextStyle(
-                color: Colors.white,
+              style: TextStyle(
+                color: textColor ?? Colors.white,
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
               ),

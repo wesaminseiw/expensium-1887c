@@ -1,3 +1,4 @@
+import 'package:expensium/presentation/styles/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../logic/blocs/register_bloc/register_bloc.dart';
@@ -23,10 +24,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
+        resizeToAvoidBottomInset: false,
         appBar: AppBar(
-          title: const Text(
+          backgroundColor: secondaryColor,
+          title: Text(
             'Register',
-            style: TextStyle(fontWeight: FontWeight.bold),
+            style: TextStyle(
+              fontWeight: FontWeight.w600,
+              color: firstTextColor,
+              fontSize: 28,
+            ),
           ),
         ),
         body: BlocListener<RegisterUserBloc, RegisterUserState>(
@@ -67,65 +74,89 @@ class _RegisterScreenState extends State<RegisterScreen> {
               });
             }
           },
-          child: Column(
+          child: Stack(
             children: [
-              const SizedBox(height: 36),
-              textField(
-                controller: _emailController,
-                hintText: 'Email Address..',
-                keyboardType: TextInputType.emailAddress,
+              Positioned.fill(
+                child: Image.asset(
+                  'assets/images/home_screen.png',
+                  fit: BoxFit.cover,
+                ),
               ),
-              const SizedBox(height: 24),
-              textField(
-                controller: _passwordController,
-                hintText: 'Password..',
-                keyboardType: TextInputType.visiblePassword,
-                isObscure: true,
-              ),
-              const SizedBox(height: 24),
-              BlocBuilder<RegisterUserBloc, RegisterUserState>(
-                builder: (context, state) {
-                  return state.isLoading == false
-                      ? submitButton(
-                          context,
-                          label: 'Register',
-                          onTap: () {
-                            context.read<RegisterUserBloc>().add(
-                                  RegisteredUserEvent(
-                                    email: _emailController.text,
-                                    password: _passwordController.text,
-                                    context: context,
-                                  ),
-                                );
-                          },
-                        )
-                      : const Center(
-                          child: CircularProgressIndicator(),
-                        );
-                },
-              ),
-              const SizedBox(height: 24),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
+              Column(
                 children: [
-                  const Text('Already have an account? '),
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const LoginScreen(),
-                        ),
-                      );
+                  const SizedBox(height: 36),
+                  textField(
+                    controller: _emailController,
+                    hintText: 'Email Address..',
+                    keyboardType: TextInputType.emailAddress,
+                    fillColor: backgroundColor,
+                    filled: true,
+                    borderSide: BorderSide.none,
+                  ),
+                  const SizedBox(height: 24),
+                  textField(
+                    controller: _passwordController,
+                    hintText: 'Password..',
+                    keyboardType: TextInputType.visiblePassword,
+                    isObscure: true,
+                    fillColor: backgroundColor,
+                    filled: true,
+                    borderSide: BorderSide.none,
+                  ),
+                  const SizedBox(height: 24),
+                  BlocBuilder<RegisterUserBloc, RegisterUserState>(
+                    builder: (context, state) {
+                      return state.isLoading == false
+                          ? submitButton(
+                              context,
+                              label: 'Register',
+                              buttonColor: primaryColor,
+                              textColor: firstTextColor,
+                              onTap: () {
+                                context.read<RegisterUserBloc>().add(
+                                      RegisteredUserEvent(
+                                        email: _emailController.text,
+                                        password: _passwordController.text,
+                                        context: context,
+                                      ),
+                                    );
+                              },
+                            )
+                          : const Center(
+                              child: CircularProgressIndicator(),
+                            );
                     },
-                    child: Text(
-                      'Login.',
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.primary,
-                        fontWeight: FontWeight.bold,
+                  ),
+                  const SizedBox(height: 24),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Already have an account? ',
+                        style: TextStyle(
+                          color: secondTextColor,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
-                    ),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const LoginScreen(),
+                            ),
+                          );
+                        },
+                        child: Text(
+                          'Login.',
+                          style: TextStyle(
+                            color: secondTextColor,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),

@@ -3,16 +3,13 @@ import 'package:expensium/logic/cubits/expense_cubit/expense_cubit.dart';
 import 'package:expensium/logic/cubits/income_cubit/income_cubit.dart';
 import 'package:expensium/logic/cubits/budget_cubit/budget_cubit.dart';
 import 'package:expensium/logic/cubits/get_display_name_cubit/get_display_name_cubit.dart';
-import 'package:expensium/presentation/screens/add_budget_screen.dart';
+import 'package:expensium/presentation/screens/splash_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../logic/blocs/login_bloc/login_bloc.dart';
 import '../logic/blocs/register_bloc/register_bloc.dart';
 import '../logic/cubits/user_actions_cubit/user_actions_cubit.dart';
-import '../presentation/screens/home_screen.dart';
-import '../presentation/screens/login_screen.dart';
-import '../presentation/screens/verify_email_screen.dart';
 import 'router.dart';
 
 class MyApp extends StatefulWidget {
@@ -59,25 +56,10 @@ class _MyAppState extends State<MyApp> {
           return MaterialApp(
             debugShowCheckedModeBanner: false,
             title: 'Expensium',
-            home: FirebaseAuth.instance.currentUser != null
-                ? FirebaseAuth.instance.currentUser!.emailVerified
-                    ? StreamBuilder(
-                        stream: context
-                            .read<BudgetCubit>()
-                            .checkIfBudgetCollectionExists()
-                            .asStream(),
-                        builder: (context, snapshot) {
-                          if (snapshot.data == true) {
-                            return const HomeScreen();
-                          } else if (snapshot.data == false) {
-                            return const AddBudgetScreen();
-                          } else {
-                            return const HomeScreen();
-                          }
-                        },
-                      )
-                    : const VerifyEmailScreen()
-                : const LoginScreen(),
+            theme: ThemeData(
+              fontFamily: 'WorkSans',
+            ),
+            home: const SplashScreen(),
             onGenerateRoute: _appRouter.onGenerateRoute,
           );
         },

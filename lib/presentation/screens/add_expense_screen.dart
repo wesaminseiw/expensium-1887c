@@ -1,6 +1,7 @@
 import 'package:expensium/logic/cubits/combined_cubit/combined_cubit.dart';
 import 'package:expensium/logic/cubits/expense_cubit/expense_cubit.dart';
 import 'package:expensium/logic/cubits/budget_cubit/budget_cubit.dart';
+import 'package:expensium/presentation/styles/colors.dart';
 import 'package:expensium/presentation/widgets/snackbar.dart';
 import 'package:expensium/presentation/widgets/submit_button.dart';
 import 'package:expensium/presentation/widgets/textfield.dart';
@@ -46,58 +47,103 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
             ? GestureDetector(
                 onTap: () => FocusScope.of(context).unfocus(),
                 child: Scaffold(
+                  resizeToAvoidBottomInset: false,
                   appBar: AppBar(
-                    title: const Text(
+                    backgroundColor: secondaryColor,
+                    title: Text(
                       'Add Expense',
-                      style: TextStyle(fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        color: firstTextColor,
+                        fontSize: 28,
+                      ),
                     ),
+                    actions: [
+                      Padding(
+                        padding: const EdgeInsets.only(right: 16),
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.pop(context);
+                          },
+                          child: Image.asset(
+                            'assets/images/home.png',
+                            width: 28,
+                            height: 28,
+                          ),
+                        ),
+                      ),
+                    ],
+                    automaticallyImplyLeading: false,
                   ),
-                  body: Column(
+                  body: Stack(
                     children: [
-                      const SizedBox(height: 36),
-                      textField(
-                        controller: _titleController,
-                        hintText: 'Title..',
+                      Positioned.fill(
+                        child: Image.asset(
+                          'assets/images/home_screen.png',
+                          fit: BoxFit.cover,
+                        ),
                       ),
-                      const SizedBox(height: 24),
-                      textField(
-                        controller: _amountController,
-                        hintText: 'Amount..',
-                        keyboardType: TextInputType.number,
-                      ),
-                      const SizedBox(height: 24),
-                      textField(
-                        controller: _dateController,
-                        hintText: 'Date..',
-                        readOnly: true,
-                        onTap: () async {
-                          final DateTime? selectedDate = await showDatePicker(
-                            context: context,
-                            firstDate: DateTime.now().subtract(
-                              const Duration(days: 365),
-                            ),
-                            lastDate: DateTime(2100),
-                            initialDate: DateTime.now(),
-                          );
-                          if (selectedDate != null) {
-                            final String formattedDate =
-                                _dateFormat.format(selectedDate);
-                            _dateController.text = formattedDate;
-                          }
-                        },
-                      ),
-                      const SizedBox(height: 24),
-                      submitButton(
-                        context,
-                        label: 'Add',
-                        onTap: () async {
-                          // then add the expense
-                          context.read<ExpenseCubit>().addExpense(
-                                title: _titleController.text,
-                                amountController: _amountController,
-                                dateController: _dateController,
+                      Column(
+                        children: [
+                          const SizedBox(height: 36),
+                          textField(
+                            controller: _titleController,
+                            hintText: 'Title..',
+                            fillColor: backgroundColor,
+                            filled: true,
+                            borderSide: BorderSide.none,
+                            textAlign: TextAlign.center,
+                          ),
+                          const SizedBox(height: 24),
+                          textField(
+                            controller: _amountController,
+                            hintText: 'Amount..',
+                            keyboardType: TextInputType.number,
+                            fillColor: backgroundColor,
+                            filled: true,
+                            borderSide: BorderSide.none,
+                            textAlign: TextAlign.center,
+                          ),
+                          const SizedBox(height: 24),
+                          textField(
+                            controller: _dateController,
+                            hintText: 'Date..',
+                            readOnly: true,
+                            fillColor: backgroundColor,
+                            filled: true,
+                            borderSide: BorderSide.none,
+                            textAlign: TextAlign.center,
+                            onTap: () async {
+                              final DateTime? selectedDate = await showDatePicker(
+                                context: context,
+                                firstDate: DateTime.now().subtract(
+                                  const Duration(days: 365),
+                                ),
+                                lastDate: DateTime.now().add(const Duration(days: 1)),
+                                initialDate: DateTime.now(),
                               );
-                        },
+                              if (selectedDate != null) {
+                                final String formattedDate = _dateFormat.format(selectedDate);
+                                _dateController.text = formattedDate;
+                              }
+                            },
+                          ),
+                          const SizedBox(height: 24),
+                          submitButton(
+                            context,
+                            label: 'Add Expense',
+                            buttonColor: primaryColor,
+                            textColor: firstTextColor,
+                            onTap: () async {
+                              // then add the expense
+                              context.read<ExpenseCubit>().addExpense(
+                                    title: _titleController.text,
+                                    amountController: _amountController,
+                                    dateController: _dateController,
+                                  );
+                            },
+                          ),
+                        ],
                       ),
                     ],
                   ),

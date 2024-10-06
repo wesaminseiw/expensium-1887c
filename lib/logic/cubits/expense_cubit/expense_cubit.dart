@@ -9,18 +9,18 @@ import 'package:uuid/uuid.dart';
 part 'expense_state.dart';
 
 class ExpenseCubit extends Cubit<ExpenseState> {
-  ExpenseCubit() : super(AddExpenseInitialState(isLoading: false));
+  ExpenseCubit() : super(const AddExpenseInitialState(isLoading: false));
 
   void addExpense({
     required String title,
     required TextEditingController amountController,
     required TextEditingController dateController,
   }) async {
-    final _firestore = FirebaseFirestore.instance;
-    final _auth = FirebaseAuth.instance;
-    final DateFormat _dateFormat = DateFormat('yyyy/MM/dd');
+    final firestore = FirebaseFirestore.instance;
+    final auth = FirebaseAuth.instance;
+    final DateFormat dateFormat = DateFormat('yyyy/MM/dd');
 
-    emit(AddExpenseLoadingState(isLoading: true));
+    emit(const AddExpenseLoadingState(isLoading: true));
 
     if (title.isNotEmpty && amountController.text.isNotEmpty) {
       try {
@@ -29,26 +29,18 @@ class ExpenseCubit extends Cubit<ExpenseState> {
         final double amount = amountInt.toDouble();
 
         // Convert text controller to date
-        final _dateToDateTime = dateController.text;
-        final DateTime date = _dateFormat.parse(_dateToDateTime);
+        final dateToDateTime = dateController.text;
+        final DateTime date = dateFormat.parse(dateToDateTime);
 
         // Create a new expense document with unique ID
-        String _id = const Uuid().v1();
-        var _expenses = _firestore
-            .collection('transactions')
-            .doc(_auth.currentUser!.uid)
-            .collection('expenses')
-            .doc(_id);
+        String id = const Uuid().v1();
+        var expenses = firestore.collection('transactions').doc(auth.currentUser!.uid).collection('expenses').doc(id);
 
         // Reference to the budget document
-        var _budget = _firestore
-            .collection('transactions')
-            .doc(_auth.currentUser!.uid)
-            .collection('budget')
-            .doc('budget');
+        var budget = firestore.collection('transactions').doc(auth.currentUser!.uid).collection('budget').doc('budget');
 
         // Fetch the current budget value
-        var budgetSnapshot = await _budget.get();
+        var budgetSnapshot = await budget.get();
         double currentBudget = budgetSnapshot.data()?['budget'] ?? 0;
 
         // Check if there's enough budget for the expense
@@ -57,9 +49,9 @@ class ExpenseCubit extends Cubit<ExpenseState> {
           double updatedBudget = currentBudget - amount;
 
           // Add the expense to Firestore
-          await _expenses.set(
+          await expenses.set(
             Expense(
-              id: _id,
+              id: id,
               title: title,
               amount: amount,
               date: date,
@@ -67,33 +59,32 @@ class ExpenseCubit extends Cubit<ExpenseState> {
           );
 
           // Update the budget in Firestore
-          await _budget.update({
+          await budget.update({
             'budget': updatedBudget,
           });
-          emit(AddExpenseSuccessState(isLoading: false));
+          await fetchWeeklyExpenses();
+          emit(const AddExpenseSuccessState(isLoading: false));
         } else {
           // Handle the case where the budget is less than the expense amount
-          emit(AddExpenseFailureNoSufficientFundsState(isLoading: false));
+          emit(const AddExpenseFailureNoSufficientFundsState(isLoading: false));
         }
       } catch (e) {
-        emit(AddExpenseFailureState(isLoading: false));
+        emit(const AddExpenseFailureState(isLoading: false));
         print(e.toString());
       }
     } else {
-      emit(AddExpenseFailureEmptyFieldsState(isLoading: false));
+      emit(const AddExpenseFailureEmptyFieldsState(isLoading: false));
     }
   }
 
   Future<List<Expense>> fetchExpenses() async {
-    final _firestore = FirebaseFirestore.instance;
-    final _auth = FirebaseAuth.instance;
+    final firestore = FirebaseFirestore.instance;
+    final auth = FirebaseAuth.instance;
 
     try {
-      var expensesSnapshot = await _firestore
-          .collection('transactions')
-          .doc(_auth.currentUser!.uid)
-          .collection('expenses')
-          .get();
+      var expensesSnapshot = await firestore.collection('transactions').doc(auth.currentUser!.uid).collection('expenses').get();
+
+      await fetchWeeklyExpenses();
 
       return expensesSnapshot.docs.map((doc) {
         Map<String, dynamic> expenseData = doc.data();
@@ -114,45 +105,37 @@ class ExpenseCubit extends Cubit<ExpenseState> {
     required String expenseId,
     required double amount,
   }) async {
-    emit(DeleteExpenseLoadingState(isLoading: true));
+    emit(const DeleteExpenseLoadingState(isLoading: true));
 
     try {
-      final _firestore = FirebaseFirestore.instance;
-      final _auth = FirebaseAuth.instance;
+      final firestore = FirebaseFirestore.instance;
+      final auth = FirebaseAuth.instance;
 
       // Ensure the user is authenticated
-      if (_auth.currentUser == null) {
-        emit(DeleteExpenseFailureState(isLoading: false));
+      if (auth.currentUser == null) {
+        emit(const DeleteExpenseFailureState(isLoading: false));
         return;
       }
 
       // Reference to the expense document
-      var expense = _firestore
-          .collection('transactions')
-          .doc(_auth.currentUser!.uid)
-          .collection('expenses')
-          .doc(expenseId);
+      var expense = firestore.collection('transactions').doc(auth.currentUser!.uid).collection('expenses').doc(expenseId);
 
       // Check if the expense document exists
       var expenseSnapshot = await expense.get();
       if (!expenseSnapshot.exists) {
-        emit(DeleteExpenseFailureState(isLoading: false));
+        emit(const DeleteExpenseFailureState(isLoading: false));
         return;
       }
 
       // Reference to the budget document
-      var _budget = _firestore
-          .collection('transactions')
-          .doc(_auth.currentUser!.uid)
-          .collection('budget')
-          .doc('budget');
+      var budget = firestore.collection('transactions').doc(auth.currentUser!.uid).collection('budget').doc('budget');
 
       // Fetch the current budget value
-      var budgetSnapshot = await _budget.get();
+      var budgetSnapshot = await budget.get();
 
       // Check if the budget document exists
       if (!budgetSnapshot.exists) {
-        emit(DeleteExpenseFailureState(isLoading: false));
+        emit(const DeleteExpenseFailureState(isLoading: false));
         return;
       }
 
@@ -160,17 +143,57 @@ class ExpenseCubit extends Cubit<ExpenseState> {
       double updatedBudget = currentBudget + amount;
 
       // Update the budget value
-      await _budget.update({
+      await budget.update({
         'budget': updatedBudget,
       });
 
       // Delete the expense document
       await expense.delete();
 
-      emit(DeleteExpenseSuccessState(isLoading: false));
+      await fetchWeeklyExpenses();
+
+      emit(const DeleteExpenseSuccessState(isLoading: false));
     } catch (e) {
       print('Error deleting expense: $e');
-      emit(DeleteExpenseFailureState(isLoading: false));
+      emit(const DeleteExpenseFailureState(isLoading: false));
+    }
+  }
+
+  Future<double> fetchWeeklyExpenses() async {
+    final firestore = FirebaseFirestore.instance;
+    final auth = FirebaseAuth.instance;
+
+    emit(const FetchWeeklyExpenseLoadingState(isLoading: true));
+    try {
+      // Get the current date and the start of the week (e.g., Sunday)
+      DateTime now = DateTime.now();
+      DateTime startOfWeek = now.subtract(Duration(days: now.weekday));
+      DateTime endOfWeek = startOfWeek.add(const Duration(days: 7));
+
+      var expensesSnapshot = await firestore
+          .collection('transactions')
+          .doc(auth.currentUser!.uid)
+          .collection('expenses')
+          .where('date', isGreaterThanOrEqualTo: startOfWeek)
+          .where('date', isLessThan: endOfWeek)
+          .get();
+
+      double totalExpenses = 0;
+      for (var doc in expensesSnapshot.docs) {
+        totalExpenses += doc.data()['amount'] as double;
+      }
+
+      emit(FetchWeeklyExpenseSuccessState(
+        isLoading: false,
+        totalExpenses: totalExpenses,
+      ));
+      return totalExpenses;
+    } catch (e) {
+      emit(FetchWeeklyExpenseFailureState(
+        isLoading: false,
+        errorMessage: e.toString(),
+      ));
+      return 0.00;
     }
   }
 }

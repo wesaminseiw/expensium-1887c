@@ -20,7 +20,7 @@ class LoginUserBloc extends Bloc<LoginUserEvent, LoginUserState> {
             emit(LoginUserSuccessStateVerified(isLoading: false));
             Navigator.pushReplacementNamed(
               event.context,
-              '/',
+              '/home',
             );
           } else {
             log('========= NAVIGATING TO VERIFY =========');
@@ -41,9 +41,7 @@ class LoginUserBloc extends Bloc<LoginUserEvent, LoginUserState> {
               ),
             );
             log('========= INVALID EMAIL =========');
-          } else if (e.code == 'wrong-credentials' ||
-              e.code == 'user-not-found' ||
-              e.code == 'wrong-password') {
+          } else if (e.code == 'wrong-credentials' || e.code == 'user-not-found' || e.code == 'wrong-password') {
             emit(
               LoginUserFailureWrongCredentialsState(
                 e: 'Wrong credentials!',

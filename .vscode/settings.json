@@ -2,5 +2,11 @@
     "editor.formatOnSave": true,
     "editor.codeActionsOnSave": {
         "source.fixAll": "explicit",
+    },
+    "[dart]": {
+        "editor.rulers": [
+            150
+        ],
+        "editor.formatOnSave": true
     }
 }

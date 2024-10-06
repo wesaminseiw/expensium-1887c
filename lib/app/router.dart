@@ -11,7 +11,7 @@ import '../presentation/screens/verify_email_screen.dart';
 class AppRouter {
   Route onGenerateRoute(RouteSettings routeSettings) {
     switch (routeSettings.name) {
-      case '/':
+      case '/home':
         return MaterialPageRoute(
           builder: (context) => const HomeScreen(),
         );

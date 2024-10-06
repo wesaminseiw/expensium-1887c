@@ -5,64 +5,104 @@ abstract class BudgetState {
   final double budget;
   final bool isLoading;
 
-  BudgetState({required this.isLoading, required this.budget});
+  const BudgetState({required this.isLoading, required this.budget});
 }
 
 class BudgetInitialState extends BudgetState {
-  BudgetInitialState({required super.isLoading, required super.budget});
+  const BudgetInitialState({required super.isLoading, required super.budget});
 }
 
 class AddBudgetInitialState extends BudgetState {
-  AddBudgetInitialState({required super.budget, required super.isLoading});
+  const AddBudgetInitialState({required super.budget, required super.isLoading});
 }
 
 class AddBudgetLoadingState extends BudgetState {
-  AddBudgetLoadingState({required super.budget, required super.isLoading});
+  const AddBudgetLoadingState({required super.budget, required super.isLoading});
 }
 
 class AddBudgetSuccessState extends BudgetState {
-  AddBudgetSuccessState({required super.budget, required super.isLoading});
+  const AddBudgetSuccessState({required super.budget, required super.isLoading});
 }
 
 class AddBudgetFailureState extends BudgetState {
-  AddBudgetFailureState({required super.budget, required super.isLoading});
+  const AddBudgetFailureState({required super.budget, required super.isLoading});
 }
 
 class AddBudgetFailureEmptyFieldsState extends BudgetState {
-  AddBudgetFailureEmptyFieldsState(
-      {required super.budget, required super.isLoading});
+  const AddBudgetFailureEmptyFieldsState({required super.budget, required super.isLoading});
 }
 
 class GetBudgetLoadingState extends BudgetState {
-  GetBudgetLoadingState({required super.budget, required super.isLoading});
+  const GetBudgetLoadingState({
+    required super.budget,
+    required super.isLoading,
+  });
 }
 
 class GetBudgetSuccessState extends BudgetState {
-  GetBudgetSuccessState({required super.isLoading, required super.budget});
+  double? budgetChange;
+  GetBudgetSuccessState({
+    this.budgetChange,
+    required super.budget,
+    required super.isLoading,
+  });
 }
 
 class GetBudgetFailureState extends BudgetState {
-  GetBudgetFailureState({required super.budget, required super.isLoading});
+  const GetBudgetFailureState({
+    required super.budget,
+    required super.isLoading,
+  });
 }
 
 class UpdateBudgetLoadingState extends BudgetState {
-  UpdateBudgetLoadingState({required super.budget, required super.isLoading});
+  const UpdateBudgetLoadingState({required super.budget, required super.isLoading});
 }
 
 class UpdateBudgetSuccessState extends BudgetState {
-  UpdateBudgetSuccessState({required super.budget, required super.isLoading});
+  const UpdateBudgetSuccessState({required super.budget, required super.isLoading});
 }
 
 class UpdateBudgetFailureState extends BudgetState {
-  UpdateBudgetFailureState({required super.budget, required super.isLoading});
+  const UpdateBudgetFailureState({required super.budget, required super.isLoading});
 }
 
 class UpdateBudgetFailureEmptyFieldsState extends BudgetState {
-  UpdateBudgetFailureEmptyFieldsState(
-      {required super.budget, required super.isLoading});
+  const UpdateBudgetFailureEmptyFieldsState({required super.budget, required super.isLoading});
 }
 
 class UpdateBudgetFailureInvalidValueState extends BudgetState {
-  UpdateBudgetFailureInvalidValueState(
-      {required super.budget, required super.isLoading});
+  const UpdateBudgetFailureInvalidValueState({required super.budget, required super.isLoading});
 }
+
+class CalculateBudgetChangeLoadingState extends BudgetState {
+  final double budgetChange;
+  const CalculateBudgetChangeLoadingState({
+    required super.isLoading,
+    required this.budgetChange,
+    required super.budget,
+  });
+}
+
+// class UpdateWeekBudgetLoadingState extends BudgetState {
+//   const UpdateWeekBudgetLoadingState({
+//     required super.budget,
+//     required super.isLoading,
+//   });
+// }
+
+// class UpdateWeekBudgetSuccessState extends BudgetState {
+//   double? newWeekBudget;
+//   UpdateWeekBudgetSuccessState({
+//     this.newWeekBudget,
+//     required super.budget,
+//     required super.isLoading,
+//   });
+// }
+
+// class UpdateWeekBudgetFailureState extends BudgetState {
+//   const UpdateWeekBudgetFailureState({
+//     required super.budget,
+//     required super.isLoading,
+//   });
+// }

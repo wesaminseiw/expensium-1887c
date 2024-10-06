@@ -1,4 +1,5 @@
 import 'package:expensium/logic/cubits/budget_cubit/budget_cubit.dart';
+import 'package:expensium/presentation/styles/colors.dart';
 import 'package:expensium/presentation/widgets/snackbar.dart';
 import 'package:expensium/presentation/widgets/submit_button.dart';
 import 'package:expensium/presentation/widgets/textfield.dart';
@@ -44,37 +45,71 @@ class _AddBudgetScreenState extends State<AddBudgetScreen> {
       child: GestureDetector(
         onTap: () => FocusScope.of(context).unfocus(),
         child: Scaffold(
+          resizeToAvoidBottomInset: false,
           appBar: AppBar(
-            title: const Text(
-              'Budget',
+            backgroundColor: secondaryColor,
+            title: Text(
+              'Add Budget',
               style: TextStyle(
-                fontWeight: FontWeight.bold,
+                fontWeight: FontWeight.w600,
+                color: firstTextColor,
+                fontSize: 28,
               ),
             ),
           ),
-          body: Column(
+          body: Stack(
             children: [
-              const SizedBox(height: 24),
-              textField(
-                controller: _budgetController,
-                hintText: 'Initial Budget..',
-                keyboardType: TextInputType.number,
+              Positioned.fill(
+                child: Image.asset(
+                  'assets/images/home_screen.png',
+                  fit: BoxFit.cover,
+                ),
               ),
-              const SizedBox(height: 24),
-              isLoading == false
-                  ? submitButton(
-                      context,
-                      label: 'Confirm',
-                      onTap: () {
-                        context.read<BudgetCubit>().addBudget(
-                              context,
-                              budgetController: _budgetController,
-                            );
-                      },
-                    )
-                  : const Center(
-                      child: CircularProgressIndicator(),
-                    ),
+              Column(
+                children: [
+                  const SizedBox(height: 64),
+                  Row(
+                    children: [
+                      const SizedBox(width: 16),
+                      Text(
+                        'Final step! Add your initial budget',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          color: firstTextColor,
+                          fontSize: 18,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  textField(
+                    controller: _budgetController,
+                    hintText: 'Initial Budget..',
+                    keyboardType: TextInputType.number,
+                    fillColor: backgroundColor,
+                    filled: true,
+                    borderSide: BorderSide.none,
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 32),
+                  isLoading == false
+                      ? submitButton(
+                          context,
+                          label: 'Confirm',
+                          buttonColor: primaryColor,
+                          textColor: firstTextColor,
+                          onTap: () {
+                            context.read<BudgetCubit>().addBudget(
+                                  context,
+                                  budgetController: _budgetController,
+                                );
+                          },
+                        )
+                      : const Center(
+                          child: CircularProgressIndicator(),
+                        ),
+                ],
+              ),
             ],
           ),
         ),

@@ -4,54 +4,74 @@ part of 'income_cubit.dart';
 abstract class IncomeState {
   final bool isLoading;
 
-  IncomeState({required this.isLoading});
+  const IncomeState({required this.isLoading});
 }
 
 class AddIncomeInitialState extends IncomeState {
-  AddIncomeInitialState({required super.isLoading});
+  const AddIncomeInitialState({required super.isLoading});
 }
 
 class AddIncomeLoadingState extends IncomeState {
-  AddIncomeLoadingState({required super.isLoading});
+  const AddIncomeLoadingState({required super.isLoading});
 }
 
 class AddIncomeSuccessState extends IncomeState {
-  AddIncomeSuccessState({required super.isLoading});
+  const AddIncomeSuccessState({required super.isLoading});
 }
 
 class AddIncomeFailureEmptyFieldsState extends IncomeState {
-  AddIncomeFailureEmptyFieldsState({required super.isLoading});
+  const AddIncomeFailureEmptyFieldsState({required super.isLoading});
 }
 
 class AddIncomeFailureState extends IncomeState {
-  AddIncomeFailureState({required super.isLoading});
+  const AddIncomeFailureState({required super.isLoading});
 }
 
 class GetIncomeLoadingState extends IncomeState {
-  GetIncomeLoadingState({required super.isLoading});
+  const GetIncomeLoadingState({required super.isLoading});
 }
 
 class GetIncomeSuccessState extends IncomeState {
   final List<Income> incomes;
 
-  GetIncomeSuccessState({
+  const GetIncomeSuccessState({
     required this.incomes,
     required super.isLoading,
   });
 }
 
 class GetIncomeFailureState extends IncomeState {
-  GetIncomeFailureState({required super.isLoading});
+  const GetIncomeFailureState({required super.isLoading});
 }
 
 class DeleteIncomeLoadingState extends IncomeState {
-  DeleteIncomeLoadingState({required super.isLoading});
+  const DeleteIncomeLoadingState({required super.isLoading});
 }
 
 class DeleteIncomeSuccessState extends IncomeState {
-  DeleteIncomeSuccessState({required super.isLoading});
+  const DeleteIncomeSuccessState({required super.isLoading});
 }
 
 class DeleteIncomeFailureState extends IncomeState {
-  DeleteIncomeFailureState({required super.isLoading});
+  const DeleteIncomeFailureState({required super.isLoading});
+}
+
+class FetchWeeklyIncomeLoadingState extends IncomeState {
+  const FetchWeeklyIncomeLoadingState({required super.isLoading});
+}
+
+class FetchWeeklyIncomeSuccessState extends IncomeState {
+  final double totalIncomes;
+  const FetchWeeklyIncomeSuccessState({
+    required this.totalIncomes,
+    required super.isLoading,
+  });
+}
+
+class FetchWeeklyIncomeFailureState extends IncomeState {
+  final String errorMessage;
+  const FetchWeeklyIncomeFailureState({
+    required this.errorMessage,
+    required super.isLoading,
+  });
 }
