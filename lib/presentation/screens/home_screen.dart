@@ -38,11 +38,13 @@ class HomeScreen extends StatelessWidget {
             if (state is DeleteIncomeSuccessState) {
               context.read<CombinedCubit>().getIncomesAndExpenses();
               context.read<BudgetCubit>().getBudgetValue();
+              context.read<GetWeeklyBudgetCubit>().getWeeklyDifference();
               // context.read<BudgetCubit>().calculateBudgetChange();
               snackBar(context, content: 'Income deleted successfully!');
             } else if (state is AddIncomeSuccessState) {
               context.read<CombinedCubit>().getIncomesAndExpenses();
               context.read<BudgetCubit>().getBudgetValue();
+              context.read<GetWeeklyBudgetCubit>().getWeeklyDifference();
               // context.read<BudgetCubit>().calculateBudgetChange();
             }
           },
@@ -52,11 +54,13 @@ class HomeScreen extends StatelessWidget {
             if (state is DeleteExpenseSuccessState) {
               context.read<CombinedCubit>().getIncomesAndExpenses();
               context.read<BudgetCubit>().getBudgetValue();
+              context.read<GetWeeklyBudgetCubit>().getWeeklyDifference();
               // context.read<BudgetCubit>().calculateBudgetChange();
               snackBar(context, content: 'Expense deleted successfully!');
             } else if (state is AddExpenseSuccessState) {
               context.read<CombinedCubit>().getIncomesAndExpenses();
               context.read<BudgetCubit>().getBudgetValue();
+              context.read<GetWeeklyBudgetCubit>().getWeeklyDifference();
               // context.read<BudgetCubit>().calculateBudgetChange();
             }
           },
