@@ -20,15 +20,12 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return AnimatedSplashScreen(
-      splash: SizedBox(
-        height: MediaQuery.of(context).size.height,
-        width: MediaQuery.of(context).size.width,
-        child: Image.asset(
-          'assets/images/frame1.png',
-          fit: BoxFit.cover,
-        ),
+      splash: Image.asset(
+        'assets/images/logo.png',
+        fit: BoxFit.cover,
       ),
-      backgroundColor: quaternaryColor,
+      splashIconSize: 400,
+      backgroundColor: tertiaryColor,
       duration: 3000,
       splashTransition: SplashTransition.fadeTransition,
       nextScreen: FirebaseAuth.instance.currentUser != null

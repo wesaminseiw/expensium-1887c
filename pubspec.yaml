@@ -3,7 +3,7 @@ description: "A new Flutter project."
 
 publish_to: 'none'
 
-version: 2.1.0+1
+version: 3.0.0+1
 
 environment:
   sdk: '>=3.4.3 <4.0.0'
@@ -44,7 +44,7 @@ flutter:
     - assets/images/settings.png
     - assets/images/empty.png
     - assets/images/neutral.png
-    - assets/images/frame1.png
+    - assets/images/logo.png
     - lib/presentation/animations/green-arrow.json
     - lib/presentation/animations/red-arrow.json
     - lib/presentation/animations/delete.json
