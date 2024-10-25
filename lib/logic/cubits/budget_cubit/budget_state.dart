@@ -78,11 +78,12 @@ class UpdateBudgetFailureInvalidValueState extends BudgetState {
 class CalculateBudgetChangeLoadingState extends BudgetState {
   final double budgetChange;
   const CalculateBudgetChangeLoadingState({
-    required super.isLoading,
     required this.budgetChange,
-    required super.budget,
-  });
+    required super.isLoading,
+  }) : super(budget: 0.0);
 }
+
+
 
 // class UpdateWeekBudgetLoadingState extends BudgetState {
 //   const UpdateWeekBudgetLoadingState({

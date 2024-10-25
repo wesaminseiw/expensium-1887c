@@ -45,6 +45,15 @@ class RegisterUserFailureEmailExistsState extends RegisterUserState {
   });
 }
 
+class RegisterUserFailurePasswordRequirementsState extends RegisterUserState {
+  final String e;
+
+  RegisterUserFailurePasswordRequirementsState({
+    required this.e,
+    required super.isLoading,
+  });
+}
+
 class RegisterUserFailureInvalidPasswordState extends RegisterUserState {
   final String e;
 

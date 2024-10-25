@@ -1,4 +1,5 @@
 import 'package:expensium/logic/cubits/combined_cubit/combined_cubit.dart';
+import 'package:expensium/logic/cubits/get_weekly_budget_cubit/get_weekly_budget_cubit.dart';
 import 'package:expensium/logic/cubits/income_cubit/income_cubit.dart';
 import 'package:expensium/logic/cubits/budget_cubit/budget_cubit.dart';
 import 'package:expensium/presentation/styles/colors.dart';
@@ -31,6 +32,7 @@ class _AddIncomeScreenState extends State<AddIncomeScreen> {
           Navigator.pop(context);
           context.read<BudgetCubit>().getBudgetValue();
           context.read<CombinedCubit>().getIncomesAndExpenses();
+          context.read<GetWeeklyBudgetCubit>().getWeeklyDifference();
         } else if (state is AddIncomeFailureState) {
           snackBar(context, content: 'Failed to add income!');
         } else if (state is AddIncomeFailureEmptyFieldsState) {
@@ -42,9 +44,10 @@ class _AddIncomeScreenState extends State<AddIncomeScreen> {
             ? GestureDetector(
                 onTap: () => FocusScope.of(context).unfocus(),
                 child: Scaffold(
+                  backgroundColor: tertiaryColor,
                   resizeToAvoidBottomInset: false,
                   appBar: AppBar(
-                    backgroundColor: secondaryColor,
+                    backgroundColor: tertiaryColor,
                     title: Text(
                       'Add Income',
                       style: TextStyle(
@@ -62,6 +65,7 @@ class _AddIncomeScreenState extends State<AddIncomeScreen> {
                           },
                           child: Image.asset(
                             'assets/images/home.png',
+                            color: primaryColor,
                             width: 28,
                             height: 28,
                           ),
@@ -70,75 +74,65 @@ class _AddIncomeScreenState extends State<AddIncomeScreen> {
                     ],
                     automaticallyImplyLeading: false,
                   ),
-                  body: Stack(
+                  body: Column(
                     children: [
-                      Positioned.fill(
-                        child: Image.asset(
-                          'assets/images/home_screen.png',
-                          fit: BoxFit.cover,
-                        ),
+                      const SizedBox(height: 36),
+                      textField(
+                        controller: _titleController,
+                        hintText: 'Title..',
+                        fillColor: quaternaryColor,
+                        filled: true,
+                        borderSide: BorderSide.none,
+                        textAlign: TextAlign.center,
                       ),
-                      Column(
-                        children: [
-                          const SizedBox(height: 36),
-                          textField(
-                            controller: _titleController,
-                            hintText: 'Title..',
-                            fillColor: backgroundColor,
-                            filled: true,
-                            borderSide: BorderSide.none,
-                            textAlign: TextAlign.center,
-                          ),
-                          const SizedBox(height: 24),
-                          textField(
-                            controller: _amountController,
-                            hintText: 'Amount..',
-                            keyboardType: TextInputType.number,
-                            fillColor: backgroundColor,
-                            filled: true,
-                            borderSide: BorderSide.none,
-                            textAlign: TextAlign.center,
-                          ),
-                          const SizedBox(height: 24),
-                          textField(
-                            controller: _dateController,
-                            hintText: 'Date..',
-                            readOnly: true,
-                            fillColor: backgroundColor,
-                            filled: true,
-                            borderSide: BorderSide.none,
-                            textAlign: TextAlign.center,
-                            onTap: () async {
-                              final DateTime? selectedDate = await showDatePicker(
-                                context: context,
-                                firstDate: DateTime.now().subtract(
-                                  const Duration(days: 365),
-                                ),
-                                lastDate: DateTime.now().add(const Duration(days: 1)),
-                                initialDate: DateTime.now(),
+                      const SizedBox(height: 24),
+                      textField(
+                        controller: _amountController,
+                        hintText: 'Amount..',
+                        keyboardType: TextInputType.number,
+                        fillColor: quaternaryColor,
+                        filled: true,
+                        borderSide: BorderSide.none,
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 24),
+                      textField(
+                        controller: _dateController,
+                        hintText: 'Date..',
+                        readOnly: true,
+                        fillColor: quaternaryColor,
+                        filled: true,
+                        borderSide: BorderSide.none,
+                        textAlign: TextAlign.center,
+                        onTap: () async {
+                          final DateTime? selectedDate = await showDatePicker(
+                            context: context,
+                            firstDate: DateTime.now().subtract(
+                              const Duration(days: 365),
+                            ),
+                            lastDate: DateTime.now().add(const Duration(days: 1)),
+                            initialDate: DateTime.now(),
+                          );
+                          if (selectedDate != null) {
+                            final String formattedDate = _dateFormat.format(selectedDate);
+                            _dateController.text = formattedDate;
+                          }
+                        },
+                      ),
+                      const SizedBox(height: 24),
+                      submitButton(
+                        context,
+                        label: 'Add Income',
+                        buttonColor: secondaryColor,
+                        textColor: tertiaryColor,
+                        onTap: () async {
+                          // then add the income
+                          context.read<IncomeCubit>().addIncome(
+                                title: _titleController.text,
+                                amountController: _amountController,
+                                dateController: _dateController,
                               );
-                              if (selectedDate != null) {
-                                final String formattedDate = _dateFormat.format(selectedDate);
-                                _dateController.text = formattedDate;
-                              }
-                            },
-                          ),
-                          const SizedBox(height: 24),
-                          submitButton(
-                            context,
-                            label: 'Add Income',
-                            buttonColor: primaryColor,
-                            textColor: firstTextColor,
-                            onTap: () async {
-                              // then add the income
-                              context.read<IncomeCubit>().addIncome(
-                                    title: _titleController.text,
-                                    amountController: _amountController,
-                                    dateController: _dateController,
-                                  );
-                            },
-                          ),
-                        ],
+                        },
                       ),
                     ],
                   ),

@@ -47,9 +47,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ),
           ],
           child: Scaffold(
+            backgroundColor: tertiaryColor,
             resizeToAvoidBottomInset: false,
             appBar: AppBar(
-              backgroundColor: secondaryColor,
+              backgroundColor: tertiaryColor,
               title: Text(
                 'Settings',
                 style: TextStyle(
@@ -68,6 +69,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     },
                     child: Image.asset(
                       'assets/images/home.png',
+                      color: primaryColor,
                       width: 28,
                       height: 28,
                     ),
@@ -78,12 +80,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ),
             body: Stack(
               children: [
-                Positioned.fill(
-                  child: Image.asset(
-                    'assets/images/home_screen.png',
-                    fit: BoxFit.cover,
-                  ),
-                ),
                 Column(
                   children: [
                     const SizedBox(height: 48),
@@ -135,7 +131,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     textField(
                       controller: _newBudgetController,
                       hintText: 'Enter your new budget..',
-                      fillColor: backgroundColor,
+                      fillColor: quaternaryColor,
                       filled: true,
                       borderSide: BorderSide.none,
                       textAlign: TextAlign.center,
@@ -157,8 +153,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     const SizedBox(height: 24),
                     submitButton(
                       context,
-                      buttonColor: backgroundColor,
-                      textColor: secondTextColor,
+                      buttonColor: secondaryColor,
+                      textColor: tertiaryColor,
                       label: 'Logout',
                       onTap: () {
                         context.read<UserActionsCubit>().signOut(context);
@@ -168,7 +164,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     submitButton(
                       context,
                       buttonColor: const Color.fromARGB(255, 182, 12, 0),
-                      textColor: firstTextColor,
+                      textColor: tertiaryColor,
                       label: 'DELETE ACCOUNT',
                       onTap: () {
                         showDialog(

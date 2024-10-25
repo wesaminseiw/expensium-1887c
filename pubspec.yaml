@@ -43,6 +43,7 @@ flutter:
     - assets/images/home.png
     - assets/images/settings.png
     - assets/images/empty.png
+    - assets/images/neutral.png
     - assets/images/frame1.png
     - lib/presentation/animations/green-arrow.json
     - lib/presentation/animations/red-arrow.json

@@ -25,8 +25,7 @@ class RegisterUserBloc extends Bloc<RegisterUserEvent, RegisterUserState> {
           String displayName = event.email.split('@')[0];
 
           // Update the display name
-          await FirebaseAuth.instance.currentUser!
-              .updateDisplayName(displayName);
+          await FirebaseAuth.instance.currentUser!.updateDisplayName(displayName);
 
           // Send email verification
           await FirebaseAuth.instance.currentUser!.sendEmailVerification();
@@ -63,7 +62,7 @@ class RegisterUserBloc extends Bloc<RegisterUserEvent, RegisterUserState> {
             log('========= EMAIL ALREADY IN USE =========');
           } else {
             emit(RegisterUserFailureState(
-              e: 'An error occurred! Try again later',
+              e: e.message.toString(),
               isLoading: false,
             ));
             log('========= FAILURE =========');

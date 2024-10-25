@@ -6,6 +6,7 @@ import 'package:expensium/logic/cubits/budget_cubit/budget_cubit.dart';
 import 'package:expensium/logic/cubits/combined_cubit/combined_cubit.dart';
 import 'package:expensium/logic/cubits/expense_cubit/expense_cubit.dart';
 import 'package:expensium/logic/cubits/get_display_name_cubit/get_display_name_cubit.dart';
+import 'package:expensium/logic/cubits/get_weekly_budget_cubit/get_weekly_budget_cubit.dart';
 import 'package:expensium/logic/cubits/income_cubit/income_cubit.dart';
 import 'package:expensium/logic/cubits/user_actions_cubit/user_actions_cubit.dart';
 import 'package:expensium/presentation/styles/colors.dart';
@@ -24,6 +25,7 @@ class HomeScreen extends StatelessWidget {
     // context.read<BudgetCubit>().startDebugTimer();
     context.read<GetDisplayNameCubit>().getDisplayName();
     context.read<BudgetCubit>().getBudgetValue();
+    context.read<GetWeeklyBudgetCubit>().getWeeklyDifference();
     context.read<CombinedCubit>().getIncomesAndExpenses();
     context.read<IncomeCubit>().fetchWeeklyIncomes();
     context.read<ExpenseCubit>().fetchWeeklyExpenses();
@@ -68,8 +70,10 @@ class HomeScreen extends StatelessWidget {
         ),
       ],
       child: Scaffold(
+        backgroundColor: tertiaryColor,
         appBar: AppBar(
-          backgroundColor: secondaryColor,
+          scrolledUnderElevation: 0,
+          backgroundColor: tertiaryColor,
           title: BlocBuilder<GetDisplayNameCubit, GetDisplayNameState>(
             builder: (context, state) {
               return Text(
@@ -77,7 +81,7 @@ class HomeScreen extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
                 maxLines: 1,
                 style: TextStyle(
-                  fontWeight: FontWeight.w500,
+                  fontWeight: FontWeight.w600,
                   color: firstTextColor,
                   fontSize: 28,
                 ),
@@ -96,6 +100,7 @@ class HomeScreen extends StatelessWidget {
                 padding: const EdgeInsets.only(right: 16),
                 child: Image.asset(
                   'assets/images/settings.png',
+                  color: primaryColor,
                   width: 32,
                   height: 32,
                 ),
@@ -103,258 +108,224 @@ class HomeScreen extends StatelessWidget {
             ),
           ],
         ),
-        body: Stack(
-          children: [
-            Positioned.fill(
-              child: Image.asset(
-                'assets/images/home_screen.png',
-                fit: BoxFit.cover,
-              ),
-            ),
-            BlocBuilder<BudgetCubit, BudgetState>(
-              builder: (context, state) {
-                return ListView(
-                  children: [
-                    const SizedBox(height: 64),
-                    Row(
-                      mainAxisSize: MainAxisSize.max,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        BlocBuilder<BudgetCubit, BudgetState>(
-                          builder: (context, state) {
-                            if (state is GetBudgetLoadingState) {
-                              context.read<BudgetCubit>().getBudgetValue();
-                            }
-                            return Text(
-                              state is GetBudgetSuccessState ? state.budget.toStringAsFixed(2).toString() : '0.0',
-                              style: TextStyle(
-                                color: secondTextColor,
-                                fontSize: 48,
-                                fontWeight: FontWeight.w700,
-                              ),
-                            );
-                          },
-                        ),
-                        Text(
-                          ' LE',
-                          style: TextStyle(
-                            color: secondTextColor,
-                            fontSize: 32,
-                            fontWeight: FontWeight.w600,
+        body: BlocBuilder<BudgetCubit, BudgetState>(
+          builder: (context, state) {
+            return ListView(
+              children: [
+                const SizedBox(height: 64),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Material(
+                    elevation: 6,
+                    borderRadius: BorderRadius.circular(16),
+                    child: Container(
+                      width: MediaQuery.of(context).size.width * 0.9,
+                      height: 200,
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: secondaryColor,
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: const [
+                          BoxShadow(
+                            color: Colors.black12,
+                            blurRadius: 10,
+                            spreadRadius: 1,
+                            offset: Offset(0, 5),
                           ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 32),
-                    Column(
-                      children: [
-                        Row(
-                          children: [
-                            const SizedBox(width: 16),
-                            Text(
-                              'This Week:',
-                              style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.w600,
-                                color: secondTextColor,
+                        ],
+                      ),
+                      child: Stack(
+                        children: [
+                          // Card elements: Chip, logo, etc.
+                          Positioned(
+                            left: 16,
+                            top: 20,
+                            child: Container(
+                              width: 50,
+                              height: 40,
+                              decoration: BoxDecoration(
+                                color: Colors.grey[300],
+                                borderRadius: BorderRadius.circular(6),
                               ),
                             ),
-                          ],
-                        ),
-                        const SizedBox(height: 16),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Material(
-                              elevation: 6,
-                              borderRadius: BorderRadius.circular(12),
-                              child: Container(
-                                width: MediaQuery.of(context).size.width * 0.436,
-                                height: 128,
-                                decoration: BoxDecoration(
-                                  color: backgroundColor,
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
+                          ),
+                          const Positioned(
+                            right: 16,
+                            top: 20,
+                            child: Row(
+                              children: [
+                                CircleAvatar(backgroundColor: Colors.orange, radius: 12),
+                                SizedBox(width: 4),
+                                CircleAvatar(backgroundColor: Colors.red, radius: 12),
+                              ],
+                            ),
+                          ),
+                          // Card Content: Budget, Income, and Expenses
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              // Left Center - Current Budget
+                              Expanded(
                                 child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Transform(
-                                      alignment: Alignment.center,
-                                      transform: Matrix4.rotationZ(pi),
-                                      child: Lottie.asset(
-                                        'lib/presentation/animations/green-arrow.json',
-                                        width: 82,
-                                        height: 82,
+                                    const SizedBox(height: 64),
+                                    const Text(
+                                      'Current Budget',
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        color: Colors.white70,
+                                        fontWeight: FontWeight.w500,
                                       ),
                                     ),
-                                    BlocBuilder<IncomeCubit, IncomeState>(
+                                    BlocBuilder<BudgetCubit, BudgetState>(
                                       builder: (context, state) {
-                                        return Row(
-                                          mainAxisAlignment: MainAxisAlignment.center,
-                                          children: [
-                                            Text(
-                                              state is FetchWeeklyIncomeSuccessState ? state.totalIncomes.toString() : '0.00',
-                                              style: TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 22,
-                                                color: secondTextColor,
-                                              ),
-                                              maxLines: 1,
-                                              overflow: TextOverflow.ellipsis,
-                                            ),
-                                            Text(
-                                              ' LE',
-                                              style: TextStyle(
-                                                fontWeight: FontWeight.w500,
-                                                fontSize: 22,
-                                                color: secondTextColor,
-                                              ),
-                                            ),
-                                          ],
+                                        if (state is GetBudgetLoadingState) {
+                                          context.read<BudgetCubit>().getBudgetValue();
+                                        }
+                                        return Text(
+                                          state is GetBudgetSuccessState ? "${state.budget.toStringAsFixed(2)} LE" : '0.0',
+                                          style: TextStyle(
+                                            color: quaternaryColor,
+                                            fontSize: 36,
+                                            fontWeight: FontWeight.bold,
+                                          ),
                                         );
                                       },
                                     ),
                                   ],
                                 ),
                               ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 24),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Material(
+                    borderRadius: BorderRadius.circular(16),
+                    elevation: 6,
+                    child: Container(
+                      width: double.infinity,
+                      height: 100,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(16),
+                        color: secondaryColor,
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                        child: Row(
+                          children: [
+                            Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  'This Week',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.white70,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                                BlocBuilder<GetWeeklyBudgetCubit, GetWeeklyBudgetState>(
+                                  builder: (context, state) {
+                                    return Row(
+                                      mainAxisAlignment: MainAxisAlignment.end, // Aligns the row's children to the end
+                                      crossAxisAlignment: CrossAxisAlignment.center, // Center the row's children vertically
+                                      children: [
+                                        Text(
+                                          state is GetWeeklyBudgetDifferenceSuccessState ? '${state.weeklyDifference.toString()} LE' : '0.0 LE',
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 28,
+                                            color: quaternaryColor,
+                                          ),
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                ),
+                              ],
                             ),
-                            const SizedBox(width: 16),
-                            Material(
-                              elevation: 6,
-                              borderRadius: BorderRadius.circular(12),
-                              child: Container(
-                                width: MediaQuery.of(context).size.width * 0.436,
-                                height: 128,
-                                decoration: BoxDecoration(
-                                  color: backgroundColor,
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                child: Column(
-                                  children: [
-                                    Lottie.asset(
-                                      'lib/presentation/animations/red-arrow.json',
-                                      width: 82,
-                                      height: 82,
-                                    ),
-                                    BlocBuilder<ExpenseCubit, ExpenseState>(
-                                      builder: (context, state) {
-                                        return Row(
-                                          mainAxisAlignment: MainAxisAlignment.center,
-                                          children: [
-                                            Text(
-                                              state is FetchWeeklyExpenseSuccessState ? state.totalExpenses.toString() : '0.00',
-                                              style: TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 22,
-                                                color: secondTextColor,
-                                              ),
-                                              maxLines: 1,
-                                              overflow: TextOverflow.ellipsis,
-                                            ),
-                                            Text(
-                                              ' LE',
-                                              style: TextStyle(
-                                                fontWeight: FontWeight.w500,
-                                                fontSize: 22,
-                                                color: secondTextColor,
-                                              ),
-                                            ),
-                                          ],
-                                        );
-                                      },
-                                    ),
-                                  ],
-                                ),
-                              ),
+                            const Spacer(),
+                            BlocBuilder<GetWeeklyBudgetCubit, GetWeeklyBudgetState>(
+                              builder: (context, state) {
+                                return Transform(
+                                  alignment: Alignment.center,
+                                  transform: (state is GetWeeklyBudgetDifferenceSuccessState && state.income == 1)
+                                      ? Matrix4.rotationZ(pi)
+                                      : Matrix4.identity(),
+                                  child: state is GetWeeklyBudgetDifferenceSuccessState
+                                      ? (state.income == 1
+                                          ? Lottie.asset(
+                                              'lib/presentation/animations/green-arrow.json',
+                                              width: 85,
+                                              height: 85,
+                                            )
+                                          : (state.income == 0
+                                              ? Padding(
+                                                  padding: const EdgeInsets.only(right: 15),
+                                                  child: Image.asset(
+                                                    'assets/images/neutral.png',
+                                                    width: 50,
+                                                    height: 50,
+                                                  ),
+                                                )
+                                              : Lottie.asset(
+                                                  'lib/presentation/animations/red-arrow.json',
+                                                  width: 85,
+                                                  height: 85,
+                                                )))
+                                      : Padding(
+                                          padding: const EdgeInsets.only(right: 15),
+                                          child: Image.asset(
+                                            'assets/images/neutral.png',
+                                            width: 65,
+                                            height: 65,
+                                          ),
+                                        ),
+                                );
+                              },
                             ),
                           ],
                         ),
-                        const SizedBox(height: 48),
-                        BlocBuilder<GetDisplayNameCubit, GetDisplayNameState>(
-                          builder: (context, state) {
-                            return Row(
-                              children: [
-                                const SizedBox(width: 16),
-                                Text(
-                                  state is GetDisplayNameSuccessState ? state.username.toUpperCase() : 'Your',
-                                  style: TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                    color: secondTextColor,
-                                  ),
-                                ),
-                                Text(
-                                  state is GetDisplayNameSuccessState ? '\'s Transactions' : ' Transactions',
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.w600,
-                                    color: secondTextColor,
-                                  ),
-                                ),
-                              ],
-                            );
-                          },
-                        ),
-                        // Row(
-                        //   children: [
-                        //     const SizedBox(width: 16),
-                        //     Material(
-                        //       elevation: 6,
-                        //       borderRadius: BorderRadius.circular(12),
-                        //       child: Container(
-                        //         width: MediaQuery.of(context).size.width - 32,
-                        //         height: 50,
-                        //         decoration: BoxDecoration(
-                        //           color: backgroundColor,
-                        //           borderRadius: BorderRadius.circular(12),
-                        //         ),
-                        //         child: Row(
-                        //           mainAxisAlignment: MainAxisAlignment.center,
-                        //           children: [
-                        //             Text(
-                        //               'Your budget has changed by ',
-                        //               style: TextStyle(
-                        //                 color: secondTextColor,
-                        //                 fontSize: 14,
-                        //                 fontWeight: FontWeight.w500,
-                        //               ),
-                        //             ),
-                        //             Text(
-                        //               state is GetBudgetSuccessState ? '${state.budgetChange?.toStringAsFixed(2).toString()}%' : '0%',
-                        //               style: TextStyle(
-                        //                 color: secondTextColor,
-                        //                 fontSize: 14,
-                        //                 fontWeight: FontWeight.bold,
-                        //               ),
-                        //             ),
-                        //             Text(
-                        //               ' this week.',
-                        //               style: TextStyle(
-                        //                 color: secondTextColor,
-                        //                 fontSize: 14,
-                        //                 fontWeight: FontWeight.w500,
-                        //               ),
-                        //             ),
-                        //           ],
-                        //         ),
-                        //       ),
-                        //     ),
-                        //     const SizedBox(width: 16),
-                        //   ],
-                        // ),
-                      ],
+                      ),
                     ),
-                    const SizedBox(height: 16),
-                    state.isLoading == false
-                        ? Expanded(
-                            child: BlocBuilder<CombinedCubit, CombinedState>(
+                  ),
+                ),
+                const SizedBox(height: 58),
+                state.isLoading == false
+                    ? Expanded(
+                        child: Column(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.only(left: 16, bottom: 38),
+                              child: Row(
+                                children: [
+                                  Text(
+                                    'Transactions',
+                                    style: TextStyle(
+                                      color: primaryColor,
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            BlocBuilder<CombinedCubit, CombinedState>(
                               builder: (context, state) {
                                 if (state is CombinedSuccessState) {
                                   if (state.combinedList.isNotEmpty) {
                                     var groupedTransactions = state.combinedList;
-                                    return ListView.separated(
+                                    return ListView.builder(
                                       physics: const NeverScrollableScrollPhysics(),
-                                      separatorBuilder: (context, index) => const SizedBox(height: 8),
                                       itemCount: groupedTransactions.length,
                                       shrinkWrap: true,
                                       itemBuilder: (context, index) {
@@ -364,36 +335,6 @@ class HomeScreen extends StatelessWidget {
                                         return Column(
                                           crossAxisAlignment: CrossAxisAlignment.start,
                                           children: [
-                                            // Date Header
-                                            Padding(
-                                              padding: const EdgeInsets.only(
-                                                left: 16,
-                                                bottom: 16,
-                                              ),
-                                              child: Material(
-                                                borderRadius: BorderRadius.circular(12),
-                                                elevation: 6,
-                                                child: Container(
-                                                  decoration: BoxDecoration(
-                                                    color: tertiaryColor,
-                                                    borderRadius: BorderRadius.circular(6),
-                                                  ),
-                                                  child: Padding(
-                                                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                                    child: Text(
-                                                      '${DateFormat('EEEE').format(date)}, ${DateFormat('yyyy-MM-dd').format(date)}',
-                                                      style: TextStyle(
-                                                        fontSize: 18,
-                                                        fontWeight: FontWeight.bold,
-                                                        color: secondTextColor,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-
-                                            // Transactions for this date
                                             ...transactions.map((item) {
                                               var type = item['type']; // 'income' or 'expense'
                                               var data = item['data']; // Income or Expense object
@@ -410,7 +351,7 @@ class HomeScreen extends StatelessWidget {
                                                             mainAxisAlignment: MainAxisAlignment.center,
                                                             children: [
                                                               CircleAvatar(
-                                                                backgroundColor: backgroundColor,
+                                                                backgroundColor: quaternaryColor,
                                                                 radius: 50,
                                                                 child: Lottie.asset(
                                                                   'lib/presentation/animations/delete.json',
@@ -419,7 +360,7 @@ class HomeScreen extends StatelessWidget {
                                                                 ),
                                                               ),
                                                               AlertDialog(
-                                                                backgroundColor: backgroundColor,
+                                                                backgroundColor: quaternaryColor,
                                                                 shape: RoundedRectangleBorder(
                                                                   borderRadius: BorderRadius.circular(6),
                                                                 ),
@@ -453,8 +394,8 @@ class HomeScreen extends StatelessWidget {
                                                                 actions: [
                                                                   TextButton(
                                                                     onPressed: () {
-                                                                      context.read<IncomeCubit>().deleteIncome(
-                                                                            incomeId: data.id,
+                                                                      context.read<ExpenseCubit>().deleteExpense(
+                                                                            expenseId: data.id,
                                                                             amount: data.amount,
                                                                           );
                                                                       context.read<CombinedCubit>().getIncomesAndExpenses();
@@ -477,80 +418,83 @@ class HomeScreen extends StatelessWidget {
                                                     },
                                                     child: Column(
                                                       children: [
-                                                        Material(
-                                                          borderRadius: BorderRadius.circular(12),
-                                                          elevation: 6,
-                                                          child: Container(
-                                                            width: double.infinity,
-                                                            height: 64,
-                                                            decoration: BoxDecoration(
-                                                              color: Colors.white,
-                                                              borderRadius: BorderRadius.circular(12),
-                                                            ),
-                                                            child: Column(
-                                                              crossAxisAlignment: CrossAxisAlignment.center,
-                                                              mainAxisAlignment: MainAxisAlignment.center,
-                                                              children: [
-                                                                Row(
-                                                                  children: [
-                                                                    const SizedBox(width: 16),
-                                                                    Image.asset(
-                                                                      'assets/images/decrease.png',
-                                                                      width: 42,
-                                                                      height: 42,
-                                                                    ),
-                                                                    const SizedBox(width: 16),
-                                                                    Column(
-                                                                      mainAxisAlignment: MainAxisAlignment.start,
-                                                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                                                      children: [
-                                                                        Text(
+                                                        Divider(
+                                                          height: 0.5,
+                                                          color: Colors.black.withOpacity(0.5),
+                                                        ),
+                                                        Container(
+                                                          width: double.infinity,
+                                                          height: 64,
+                                                          decoration: BoxDecoration(color: tertiaryColor),
+                                                          child: Column(
+                                                            crossAxisAlignment: CrossAxisAlignment.center,
+                                                            mainAxisAlignment: MainAxisAlignment.center,
+                                                            children: [
+                                                              Row(
+                                                                children: [
+                                                                  const SizedBox(width: 16),
+                                                                  CircleAvatar(
+                                                                    radius: 5,
+                                                                    backgroundColor: expenseColor,
+                                                                  ),
+                                                                  const SizedBox(width: 16),
+                                                                  Column(
+                                                                    mainAxisAlignment: MainAxisAlignment.start,
+                                                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                                                    children: [
+                                                                      SizedBox(
+                                                                        width: MediaQuery.of(context).size.width * 0.45,
+                                                                        child: Text(
                                                                           data.title,
                                                                           maxLines: 1,
                                                                           overflow: TextOverflow.ellipsis,
                                                                           style: TextStyle(
                                                                             color: secondTextColor,
                                                                             fontSize: 16,
-                                                                            fontWeight: FontWeight.w600,
+                                                                            fontWeight: FontWeight.bold,
                                                                           ),
                                                                         ),
-                                                                        Text(
-                                                                          DateFormat('yyyy-MM-dd').format(date),
-                                                                          maxLines: 1,
-                                                                          overflow: TextOverflow.ellipsis,
-                                                                          style: TextStyle(
-                                                                            color: Colors.grey.shade500,
-                                                                            fontSize: 16,
-                                                                            fontWeight: FontWeight.w500,
-                                                                          ),
+                                                                      ),
+                                                                      const SizedBox(height: 4),
+                                                                      Text(
+                                                                        DateFormat('yyyy-MM-dd').format(date),
+                                                                        maxLines: 1,
+                                                                        overflow: TextOverflow.ellipsis,
+                                                                        style: const TextStyle(
+                                                                          color: Color(0xFF878787),
+                                                                          fontSize: 14,
+                                                                          fontWeight: FontWeight.w600,
                                                                         ),
-                                                                      ],
-                                                                    ),
-                                                                    const Spacer(),
-                                                                    Text(
-                                                                      '- ${data.amount}',
-                                                                      style: TextStyle(
-                                                                        color: secondTextColor,
-                                                                        fontSize: 16,
-                                                                        fontWeight: FontWeight.bold,
                                                                       ),
+                                                                    ],
+                                                                  ),
+                                                                  const Spacer(),
+                                                                  Text(
+                                                                    data.amount.toString(),
+                                                                    style: TextStyle(
+                                                                      color: expenseColor,
+                                                                      fontSize: 16,
+                                                                      fontWeight: FontWeight.bold,
                                                                     ),
-                                                                    Text(
-                                                                      ' LE',
-                                                                      style: TextStyle(
-                                                                        color: secondTextColor,
-                                                                        fontSize: 16,
-                                                                        fontWeight: FontWeight.w500,
-                                                                      ),
+                                                                  ),
+                                                                  Text(
+                                                                    ' LE',
+                                                                    style: TextStyle(
+                                                                      color: secondTextColor,
+                                                                      fontSize: 16,
+                                                                      fontWeight: FontWeight.w500,
                                                                     ),
-                                                                    const SizedBox(width: 16),
-                                                                  ],
-                                                                ),
-                                                              ],
-                                                            ),
+                                                                  ),
+                                                                  const SizedBox(width: 16),
+                                                                ],
+                                                              ),
+                                                            ],
                                                           ),
                                                         ),
-                                                        const SizedBox(height: 16),
+                                                        Divider(
+                                                          height: 0.5,
+                                                          color: Colors.black.withOpacity(0.5),
+                                                        ),
                                                       ],
                                                     ),
                                                   ),
@@ -569,7 +513,7 @@ class HomeScreen extends StatelessWidget {
                                                             mainAxisAlignment: MainAxisAlignment.center,
                                                             children: [
                                                               CircleAvatar(
-                                                                backgroundColor: backgroundColor,
+                                                                backgroundColor: quaternaryColor,
                                                                 radius: 50,
                                                                 child: Lottie.asset(
                                                                   'lib/presentation/animations/delete.json',
@@ -578,7 +522,7 @@ class HomeScreen extends StatelessWidget {
                                                                 ),
                                                               ),
                                                               AlertDialog(
-                                                                backgroundColor: backgroundColor,
+                                                                backgroundColor: quaternaryColor,
                                                                 shape: RoundedRectangleBorder(
                                                                   borderRadius: BorderRadius.circular(6),
                                                                 ),
@@ -636,83 +580,83 @@ class HomeScreen extends StatelessWidget {
                                                     },
                                                     child: Column(
                                                       children: [
-                                                        Material(
-                                                          borderRadius: BorderRadius.circular(12),
-                                                          elevation: 6,
-                                                          child: Container(
-                                                            width: double.infinity,
-                                                            height: 64,
-                                                            decoration: BoxDecoration(
-                                                              color: Colors.white,
-                                                              borderRadius: BorderRadius.circular(12),
-                                                            ),
-                                                            child: Column(
-                                                              crossAxisAlignment: CrossAxisAlignment.center,
-                                                              mainAxisAlignment: MainAxisAlignment.center,
-                                                              children: [
-                                                                Row(
-                                                                  children: [
-                                                                    const SizedBox(width: 16),
-                                                                    Image.asset(
-                                                                      'assets/images/increase.png',
-                                                                      width: 42,
-                                                                      height: 42,
-                                                                    ),
-                                                                    const SizedBox(width: 16),
-                                                                    Column(
-                                                                      mainAxisAlignment: MainAxisAlignment.start,
-                                                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                                                      children: [
-                                                                        SizedBox(
-                                                                          width: MediaQuery.of(context).size.width * 0.45,
-                                                                          child: Text(
-                                                                            data.title,
-                                                                            maxLines: 1,
-                                                                            overflow: TextOverflow.ellipsis,
-                                                                            style: TextStyle(
-                                                                              color: secondTextColor,
-                                                                              fontSize: 16,
-                                                                              fontWeight: FontWeight.w600,
-                                                                            ),
-                                                                          ),
-                                                                        ),
-                                                                        Text(
-                                                                          DateFormat('yyyy-MM-dd').format(date),
+                                                        Divider(
+                                                          height: 0.5,
+                                                          color: Colors.black.withOpacity(0.5),
+                                                        ),
+                                                        Container(
+                                                          width: double.infinity,
+                                                          height: 64,
+                                                          decoration: BoxDecoration(color: tertiaryColor),
+                                                          child: Column(
+                                                            crossAxisAlignment: CrossAxisAlignment.center,
+                                                            mainAxisAlignment: MainAxisAlignment.center,
+                                                            children: [
+                                                              Row(
+                                                                children: [
+                                                                  const SizedBox(width: 16),
+                                                                  CircleAvatar(
+                                                                    radius: 5,
+                                                                    backgroundColor: incomeColor,
+                                                                  ),
+                                                                  const SizedBox(width: 16),
+                                                                  Column(
+                                                                    mainAxisAlignment: MainAxisAlignment.start,
+                                                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                                                    children: [
+                                                                      SizedBox(
+                                                                        width: MediaQuery.of(context).size.width * 0.45,
+                                                                        child: Text(
+                                                                          data.title,
                                                                           maxLines: 1,
                                                                           overflow: TextOverflow.ellipsis,
                                                                           style: TextStyle(
-                                                                            color: Colors.grey.shade500,
+                                                                            color: secondTextColor,
                                                                             fontSize: 16,
-                                                                            fontWeight: FontWeight.w500,
+                                                                            fontWeight: FontWeight.bold,
                                                                           ),
                                                                         ),
-                                                                      ],
-                                                                    ),
-                                                                    const Spacer(),
-                                                                    Text(
-                                                                      '+ ${data.amount}',
-                                                                      style: TextStyle(
-                                                                        color: secondTextColor,
-                                                                        fontSize: 16,
-                                                                        fontWeight: FontWeight.bold,
                                                                       ),
-                                                                    ),
-                                                                    Text(
-                                                                      ' LE',
-                                                                      style: TextStyle(
-                                                                        color: secondTextColor,
-                                                                        fontSize: 16,
-                                                                        fontWeight: FontWeight.w500,
+                                                                      const SizedBox(height: 4),
+                                                                      Text(
+                                                                        DateFormat('yyyy-MM-dd').format(date),
+                                                                        maxLines: 1,
+                                                                        overflow: TextOverflow.ellipsis,
+                                                                        style: const TextStyle(
+                                                                          color: Color(0xFF878787),
+                                                                          fontSize: 14,
+                                                                          fontWeight: FontWeight.w600,
+                                                                        ),
                                                                       ),
+                                                                    ],
+                                                                  ),
+                                                                  const Spacer(),
+                                                                  Text(
+                                                                    data.amount.toString(),
+                                                                    style: TextStyle(
+                                                                      color: incomeColor,
+                                                                      fontSize: 16,
+                                                                      fontWeight: FontWeight.bold,
                                                                     ),
-                                                                    const SizedBox(width: 16),
-                                                                  ],
-                                                                ),
-                                                              ],
-                                                            ),
+                                                                  ),
+                                                                  Text(
+                                                                    ' LE',
+                                                                    style: TextStyle(
+                                                                      color: secondTextColor,
+                                                                      fontSize: 16,
+                                                                      fontWeight: FontWeight.w500,
+                                                                    ),
+                                                                  ),
+                                                                  const SizedBox(width: 16),
+                                                                ],
+                                                              ),
+                                                            ],
                                                           ),
                                                         ),
-                                                        const SizedBox(height: 16),
+                                                        Divider(
+                                                          height: 0.5,
+                                                          color: Colors.black.withOpacity(0.5),
+                                                        ),
                                                       ],
                                                     ),
                                                   ),
@@ -736,7 +680,6 @@ class HomeScreen extends StatelessWidget {
                                 return Center(
                                   child: Column(
                                     children: [
-                                      const SizedBox(height: 36),
                                       Container(
                                         decoration: BoxDecoration(
                                           color: Colors.white,
@@ -748,8 +691,8 @@ class HomeScreen extends StatelessWidget {
                                             children: [
                                               Image.asset(
                                                 'assets/images/empty.png',
-                                                width: 100,
-                                                height: 100,
+                                                width: 90,
+                                                height: 90,
                                               ),
                                               const SizedBox(height: 16),
                                               Text(
@@ -769,26 +712,26 @@ class HomeScreen extends StatelessWidget {
                                 );
                               },
                             ),
-                          )
-                        : const Expanded(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                CircularProgressIndicator(),
-                              ],
-                            ),
-                          ),
-                    const SizedBox(height: 72),
-                  ],
-                );
-              },
-            ),
-          ],
+                          ],
+                        ),
+                      )
+                    : const Expanded(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            CircularProgressIndicator(),
+                          ],
+                        ),
+                      ),
+                const SizedBox(height: 100),
+              ],
+            );
+          },
         ),
         floatingActionButton: SpeedDial(
-          iconTheme: IconThemeData(color: backgroundColor, size: 30),
-          backgroundColor: primaryColor,
+          iconTheme: IconThemeData(color: quaternaryColor, size: 30),
+          backgroundColor: secondaryColor,
           children: [
             SpeedDialChild(
               child: const Icon(Icons.money_off),
@@ -820,7 +763,7 @@ class HomeScreen extends StatelessWidget {
           label: Text(
             'Add',
             style: TextStyle(
-              color: firstTextColor,
+              color: tertiaryColor,
               fontSize: 18,
               fontWeight: FontWeight.w600,
             ),
@@ -835,5 +778,4 @@ class HomeScreen extends StatelessWidget {
       ),
     );
   }
-  // TODO: Add tests.
 }

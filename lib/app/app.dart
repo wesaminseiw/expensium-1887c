@@ -1,5 +1,6 @@
 import 'package:expensium/logic/cubits/combined_cubit/combined_cubit.dart';
 import 'package:expensium/logic/cubits/expense_cubit/expense_cubit.dart';
+import 'package:expensium/logic/cubits/get_weekly_budget_cubit/get_weekly_budget_cubit.dart';
 import 'package:expensium/logic/cubits/income_cubit/income_cubit.dart';
 import 'package:expensium/logic/cubits/budget_cubit/budget_cubit.dart';
 import 'package:expensium/logic/cubits/get_display_name_cubit/get_display_name_cubit.dart';
@@ -42,6 +43,7 @@ class _MyAppState extends State<MyApp> {
         BlocProvider(create: (context) => _incomeCubit),
         BlocProvider(create: (context) => _expenseCubit),
         BlocProvider(create: (context) => BudgetCubit()),
+        BlocProvider(create: (context) => GetWeeklyBudgetCubit()),
         BlocProvider(
           create: (context) => CombinedCubit(
             expenseCubit: _expenseCubit,

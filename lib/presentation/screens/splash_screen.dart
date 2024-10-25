@@ -28,7 +28,7 @@ class _SplashScreenState extends State<SplashScreen> {
           fit: BoxFit.cover,
         ),
       ),
-      backgroundColor: backgroundColor,
+      backgroundColor: quaternaryColor,
       duration: 3000,
       splashTransition: SplashTransition.fadeTransition,
       nextScreen: FirebaseAuth.instance.currentUser != null
