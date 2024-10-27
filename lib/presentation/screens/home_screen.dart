@@ -1,5 +1,4 @@
 import 'dart:math';
-
 import 'package:expensium/data/models/expense_model.dart';
 import 'package:expensium/data/models/income_model.dart';
 import 'package:expensium/logic/cubits/budget_cubit/budget_cubit.dart';
@@ -78,19 +77,10 @@ class HomeScreen extends StatelessWidget {
         appBar: AppBar(
           scrolledUnderElevation: 0,
           backgroundColor: tertiaryColor,
-          title: BlocBuilder<GetDisplayNameCubit, GetDisplayNameState>(
-            builder: (context, state) {
-              return Text(
-                'Expensium',
-                overflow: TextOverflow.ellipsis,
-                maxLines: 1,
-                style: TextStyle(
-                  fontWeight: FontWeight.w600,
-                  color: firstTextColor,
-                  fontSize: 28,
-                ),
-              );
-            },
+          title: Image.asset(
+            'assets/logos/logo-no-bg.png',
+            width: 10907 / 60,
+            height: 2048 / 60,
           ),
           actions: [
             GestureDetector(

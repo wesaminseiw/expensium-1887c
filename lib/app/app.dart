@@ -57,7 +57,7 @@ class _MyAppState extends State<MyApp> {
           FirebaseAuth.instance.currentUser?.reload();
           return MaterialApp(
             debugShowCheckedModeBanner: false,
-            title: 'Expensium',
+            title: 'expensium',
             theme: ThemeData(
               fontFamily: 'WorkSans',
             ),

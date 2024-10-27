@@ -44,7 +44,12 @@ flutter:
     - assets/images/settings.png
     - assets/images/empty.png
     - assets/images/neutral.png
-    - assets/images/logo.png
+    - assets/logos/splash.png
+    - assets/logos/logo.png
+    - assets/logos/logo-mini.png
+    - assets/logos/logo-mini-rounded.png
+    - assets/logos/logo-no-bg.png
+    - assets/logos/logo-mini-no-bg.png
     - lib/presentation/animations/green-arrow.json
     - lib/presentation/animations/red-arrow.json
     - lib/presentation/animations/delete.json

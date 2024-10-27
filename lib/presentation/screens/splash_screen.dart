@@ -21,7 +21,7 @@ class _SplashScreenState extends State<SplashScreen> {
   Widget build(BuildContext context) {
     return AnimatedSplashScreen(
       splash: Image.asset(
-        'assets/images/logo.png',
+        'assets/logos/splash.png',
         fit: BoxFit.cover,
       ),
       splashIconSize: 400,
