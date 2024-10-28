@@ -47,61 +47,71 @@ class _AddBudgetScreenState extends State<AddBudgetScreen> {
         child: Scaffold(
           backgroundColor: tertiaryColor,
           resizeToAvoidBottomInset: false,
-          appBar: AppBar(
-            backgroundColor: tertiaryColor,
-            title: Text(
-              'Add Budget',
-              style: TextStyle(
-                fontWeight: FontWeight.w600,
-                color: firstTextColor,
-                fontSize: 28,
-              ),
-            ),
-          ),
-          body: Column(
-            children: [
-              const SizedBox(height: 64),
-              Row(
-                children: [
-                  const SizedBox(width: 16),
-                  Text(
-                    'Final step! Add your initial budget',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      color: secondTextColor,
-                      fontSize: 18,
-                    ),
+          body: SafeArea(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 64),
+                Padding(
+                  padding: const EdgeInsets.only(left: 16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Image.asset(
+                        'assets/logos/logo-mini-no-bg.png',
+                        width: 96,
+                        height: 96,
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        'Final step,',
+                        style: TextStyle(
+                          color: secondaryColor,
+                          fontSize: 24,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      Text(
+                        'Add your initial budget to start using the app!',
+                        style: TextStyle(
+                          color: Colors.grey.shade600,
+                          fontSize: 15,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      const SizedBox(height: 36),
+                    ],
                   ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              textField(
-                controller: _budgetController,
-                hintText: 'Initial Budget..',
-                keyboardType: TextInputType.number,
-                fillColor: quaternaryColor,
-                filled: true,
-                borderSide: BorderSide.none,
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 32),
-              isLoading == false
-                  ? submitButton(
-                      context,
-                      label: 'Confirm',
-                      buttonColor: secondaryColor,
-                      textColor: tertiaryColor,
-                      onTap: () {
-                        context.read<BudgetCubit>().addBudget(
-                              context,
-                              budgetController: _budgetController,
-                            );
-                      },
-                    )
-                  : const Center(
-                      child: CircularProgressIndicator(),
-                    ),
-            ],
+                ),
+                const SizedBox(height: 16),
+                textField(
+                  controller: _budgetController,
+                  hintText: 'Initial Budget..',
+                  keyboardType: TextInputType.number,
+                  fillColor: quaternaryColor,
+                  filled: true,
+                  borderSide: BorderSide.none,
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 32),
+                isLoading == false
+                    ? submitButton(
+                        context,
+                        label: 'Confirm',
+                        buttonColor: secondaryColor,
+                        textColor: tertiaryColor,
+                        onTap: () {
+                          context.read<BudgetCubit>().addBudget(
+                                context,
+                                budgetController: _budgetController,
+                              );
+                        },
+                      )
+                    : const Center(
+                        child: CircularProgressIndicator(),
+                      ),
+              ],
+            ),
           ),
         ),
       ),

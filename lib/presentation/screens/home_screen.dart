@@ -107,7 +107,7 @@ class HomeScreen extends StatelessWidget {
           builder: (context, state) {
             return ListView(
               children: [
-                const SizedBox(height: 64),
+                const SizedBox(height: 24),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: Material(

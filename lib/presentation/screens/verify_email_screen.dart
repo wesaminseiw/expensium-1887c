@@ -43,54 +43,73 @@ class VerifyEmailScreen extends StatelessWidget {
       },
       child: Scaffold(
         backgroundColor: tertiaryColor,
-        appBar: AppBar(
-          backgroundColor: tertiaryColor,
-          title: Text(
-            'Verify',
-            style: TextStyle(
-              fontWeight: FontWeight.w600,
-              color: firstTextColor,
-              fontSize: 28,
-            ),
-          ),
-        ),
-        body: Column(
-          children: [
-            const Spacer(),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Text(
-                'We\'ve sent a link to your email for verification. Check your inbox.',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontWeight: FontWeight.w600,
-                  color: secondTextColor,
-                  fontSize: 16,
+        body: SafeArea(
+          child: Column(
+            children: [
+              Expanded(
+                flex: 2,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Image.asset(
+                      'assets/logos/logo-mini-no-bg.png',
+                      width: 156,
+                      height: 156,
+                    ),
+                    const SizedBox(height: 48),
+                    Text(
+                      'Verify',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        color: firstTextColor,
+                        fontSize: 40,
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            ),
-            const SizedBox(height: 24),
-            submitButton(
-              context,
-              label: 'Check Verification',
-              buttonColor: secondaryColor,
-              textColor: tertiaryColor,
-              onTap: () {
-                context.read<UserActionsCubit>().checkEmailVerification(context);
-              },
-            ),
-            const SizedBox(height: 16),
-            submitButton(
-              context,
-              label: 'Delete Account',
-              buttonColor: secondaryColor,
-              textColor: tertiaryColor,
-              onTap: () async {
-                await context.read<UserActionsCubit>().deleteUser(context);
-              },
-            ),
-            const SizedBox(height: 48),
-          ],
+              Expanded(
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: Text(
+                        'We\'ve sent a link to your email for verification. Check your inbox.',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          color: secondTextColor,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    submitButton(
+                      context,
+                      label: 'Check Verification',
+                      buttonColor: secondaryColor,
+                      textColor: tertiaryColor,
+                      onTap: () {
+                        context.read<UserActionsCubit>().checkEmailVerification(context);
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                    submitButton(
+                      context,
+                      label: 'Delete Account',
+                      buttonColor: secondaryColor,
+                      textColor: tertiaryColor,
+                      onTap: () async {
+                        await context.read<UserActionsCubit>().deleteUser(context);
+                      },
+                    ),
+                    const SizedBox(height: 48),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

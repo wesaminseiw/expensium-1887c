@@ -26,17 +26,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
       child: Scaffold(
         backgroundColor: tertiaryColor,
         resizeToAvoidBottomInset: false,
-        appBar: AppBar(
-          backgroundColor: tertiaryColor,
-          title: Text(
-            'Register',
-            style: TextStyle(
-              fontWeight: FontWeight.w600,
-              color: firstTextColor,
-              fontSize: 28,
-            ),
-          ),
-        ),
         body: BlocListener<RegisterUserBloc, RegisterUserState>(
           listener: (context, state) {
             if (state is RegisterUserLoadingState) {
@@ -44,7 +33,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 isLoading = true;
               });
             } else if (state is RegisterUserSuccessState) {
-              longTimeSnackBar(context, content: 'Registered successfully!');
+              shortTimeSnackBar(context, content: 'Registered successfully!');
               setState(() {
                 isLoading = false;
               });
@@ -54,17 +43,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 isLoading = false;
               });
             } else if (state is RegisterUserFailureEmailExistsState) {
-              longTimeSnackBar(context, content: state.e);
+              shortTimeSnackBar(context, content: state.e);
               setState(() {
                 isLoading = false;
               });
             } else if (state is RegisterUserFailureInvalidEmailState) {
-              longTimeSnackBar(context, content: state.e);
+              shortTimeSnackBar(context, content: state.e);
               setState(() {
                 isLoading = false;
               });
             } else if (state is RegisterUserFailureInvalidPasswordState) {
-              longTimeSnackBar(
+              shortTimeSnackBar(
                 context,
                 content: state.e,
               );
@@ -72,97 +61,131 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 isLoading = false;
               });
             } else if (state is RegisterUserFailureEmptyFields) {
-              longTimeSnackBar(context, content: state.e);
+              shortTimeSnackBar(context, content: state.e);
               setState(() {
                 isLoading = false;
               });
             } else if (state is RegisterUserFailurePasswordRequirementsState) {
-              longTimeSnackBar(context, content: state.e);
+              shortTimeSnackBar(context, content: state.e);
               setState(() {
                 isLoading = false;
               });
             }
           },
-          child: Column(
-            children: [
-              const SizedBox(height: 36),
-              textField(
-                controller: _emailController,
-                hintText: 'Email Address..',
-                keyboardType: TextInputType.emailAddress,
-                fillColor: quaternaryColor,
-                filled: true,
-                borderSide: BorderSide.none,
-              ),
-              const SizedBox(height: 24),
-              textField(
-                controller: _passwordController,
-                hintText: 'Password..',
-                keyboardType: TextInputType.visiblePassword,
-                isObscure: true,
-                fillColor: quaternaryColor,
-                filled: true,
-                borderSide: BorderSide.none,
-              ),
-              const SizedBox(height: 24),
-              BlocBuilder<RegisterUserBloc, RegisterUserState>(
-                builder: (context, state) {
-                  return state.isLoading == false
-                      ? submitButton(
-                          context,
-                          label: 'Register',
-                          buttonColor: secondTextColor,
-                          textColor: tertiaryColor,
-                          onTap: () {
-                            context.read<RegisterUserBloc>().add(
-                                  RegisteredUserEvent(
-                                    email: _emailController.text,
-                                    password: _passwordController.text,
-                                    context: context,
-                                  ),
-                                );
-                          },
-                        )
-                      : const SizedBox(
-                          height: 56,
-                          child: Center(
-                            child: CircularProgressIndicator(),
-                          ),
-                        );
-                },
-              ),
-              const SizedBox(height: 24),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Text(
-                    'Already have an account? ',
-                    style: TextStyle(
-                      color: secondTextColor,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const LoginScreen(),
+          child: SafeArea(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 96),
+                Padding(
+                  padding: const EdgeInsets.only(left: 16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Image.asset(
+                        'assets/logos/logo-mini-no-bg.png',
+                        width: 96,
+                        height: 96,
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        'Create your account,',
+                        style: TextStyle(
+                          color: secondaryColor,
+                          fontSize: 24,
+                          fontWeight: FontWeight.w600,
                         ),
-                      );
-                    },
-                    child: Text(
-                      'Login.',
+                      ),
+                      Text(
+                        'Track your incomes and expenses and don\'t loose control!',
+                        style: TextStyle(
+                          color: Colors.grey.shade600,
+                          fontSize: 15,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      const SizedBox(height: 48),
+                    ],
+                  ),
+                ),
+                textField(
+                  controller: _emailController,
+                  hintText: 'Email Address..',
+                  keyboardType: TextInputType.emailAddress,
+                  fillColor: quaternaryColor,
+                  filled: true,
+                  borderSide: BorderSide.none,
+                ),
+                const SizedBox(height: 24),
+                textField(
+                  controller: _passwordController,
+                  hintText: 'Password..',
+                  keyboardType: TextInputType.visiblePassword,
+                  isObscure: true,
+                  fillColor: quaternaryColor,
+                  filled: true,
+                  borderSide: BorderSide.none,
+                ),
+                const SizedBox(height: 24),
+                BlocBuilder<RegisterUserBloc, RegisterUserState>(
+                  builder: (context, state) {
+                    return state.isLoading == false
+                        ? submitButton(
+                            context,
+                            label: 'Register',
+                            buttonColor: secondTextColor,
+                            textColor: tertiaryColor,
+                            onTap: () {
+                              context.read<RegisterUserBloc>().add(
+                                    RegisteredUserEvent(
+                                      email: _emailController.text,
+                                      password: _passwordController.text,
+                                      context: context,
+                                    ),
+                                  );
+                            },
+                          )
+                        : const SizedBox(
+                            height: 56,
+                            child: Center(
+                              child: CircularProgressIndicator(),
+                            ),
+                          );
+                  },
+                ),
+                const SizedBox(height: 24),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      'Already have an account? ',
                       style: TextStyle(
                         color: secondTextColor,
-                        fontWeight: FontWeight.bold,
+                        fontWeight: FontWeight.w500,
                       ),
                     ),
-                  ),
-                ],
-              ),
-            ],
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const LoginScreen(),
+                          ),
+                        );
+                      },
+                      child: Text(
+                        'Login.',
+                        style: TextStyle(
+                          color: secondTextColor,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),

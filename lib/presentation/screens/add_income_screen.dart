@@ -48,35 +48,54 @@ class _AddIncomeScreenState extends State<AddIncomeScreen> {
                   resizeToAvoidBottomInset: false,
                   appBar: AppBar(
                     backgroundColor: tertiaryColor,
-                    title: Text(
-                      'Add Income',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        color: firstTextColor,
-                        fontSize: 28,
-                      ),
-                    ),
-                    actions: [
-                      Padding(
-                        padding: const EdgeInsets.only(right: 16),
-                        child: GestureDetector(
-                          onTap: () {
-                            Navigator.pop(context);
-                          },
-                          child: Image.asset(
-                            'assets/images/home.png',
-                            color: primaryColor,
-                            width: 28,
-                            height: 28,
-                          ),
+                    leading: Padding(
+                      padding: const EdgeInsets.only(left: 16, right: 8),
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.pop(context);
+                        },
+                        child: Image.asset(
+                          'assets/images/home.png',
+                          color: primaryColor,
+                          width: 28,
+                          height: 28,
                         ),
                       ),
-                    ],
+                    ),
                     automaticallyImplyLeading: false,
                   ),
                   body: Column(
                     children: [
-                      const SizedBox(height: 36),
+                      const SizedBox(height: 96),
+                      Row(
+                        children: [
+                          const SizedBox(width: 16),
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Add Income',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  color: secondTextColor,
+                                  fontSize: 28,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                'Here can you add your incomes, don\'t forget\nto add all what is required',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.grey.shade600,
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 32),
                       textField(
                         controller: _titleController,
                         hintText: 'Title..',
@@ -86,38 +105,45 @@ class _AddIncomeScreenState extends State<AddIncomeScreen> {
                         textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: 24),
-                      textField(
-                        controller: _amountController,
-                        hintText: 'Amount..',
-                        keyboardType: TextInputType.number,
-                        fillColor: quaternaryColor,
-                        filled: true,
-                        borderSide: BorderSide.none,
-                        textAlign: TextAlign.center,
-                      ),
-                      const SizedBox(height: 24),
-                      textField(
-                        controller: _dateController,
-                        hintText: 'Date..',
-                        readOnly: true,
-                        fillColor: quaternaryColor,
-                        filled: true,
-                        borderSide: BorderSide.none,
-                        textAlign: TextAlign.center,
-                        onTap: () async {
-                          final DateTime? selectedDate = await showDatePicker(
-                            context: context,
-                            firstDate: DateTime.now().subtract(
-                              const Duration(days: 365),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: textField(
+                              controller: _amountController,
+                              hintText: 'Amount..',
+                              keyboardType: TextInputType.number,
+                              fillColor: quaternaryColor,
+                              filled: true,
+                              borderSide: BorderSide.none,
+                              textAlign: TextAlign.center,
                             ),
-                            lastDate: DateTime.now().add(const Duration(days: 1)),
-                            initialDate: DateTime.now(),
-                          );
-                          if (selectedDate != null) {
-                            final String formattedDate = _dateFormat.format(selectedDate);
-                            _dateController.text = formattedDate;
-                          }
-                        },
+                          ),
+                          Expanded(
+                            child: textField(
+                              controller: _dateController,
+                              hintText: 'Date..',
+                              readOnly: true,
+                              fillColor: quaternaryColor,
+                              filled: true,
+                              borderSide: BorderSide.none,
+                              textAlign: TextAlign.center,
+                              onTap: () async {
+                                final DateTime? selectedDate = await showDatePicker(
+                                  context: context,
+                                  firstDate: DateTime.now().subtract(
+                                    const Duration(days: 365),
+                                  ),
+                                  lastDate: DateTime.now().add(const Duration(days: 1)),
+                                  initialDate: DateTime.now(),
+                                );
+                                if (selectedDate != null) {
+                                  final String formattedDate = _dateFormat.format(selectedDate);
+                                  _dateController.text = formattedDate;
+                                }
+                              },
+                            ),
+                          ),
+                        ],
                       ),
                       const SizedBox(height: 24),
                       submitButton(

@@ -25,22 +25,11 @@ class _LoginScreenState extends State<LoginScreen> {
       child: Scaffold(
         backgroundColor: tertiaryColor,
         resizeToAvoidBottomInset: false,
-        appBar: AppBar(
-          backgroundColor: tertiaryColor,
-          title: Text(
-            'Login',
-            style: TextStyle(
-              fontWeight: FontWeight.w600,
-              color: firstTextColor,
-              fontSize: 28,
-            ),
-          ),
-        ),
         body: BlocListener<LoginUserBloc, LoginUserState>(
           listener: (context, state) {
             if (state is LoginUserLoadingState) {
             } else if (state is LoginUserSuccessStateVerified) {
-              longTimeSnackBar(context, content: 'Logged in successfully!');
+              shortTimeSnackBar(context, content: 'Logged in successfully!');
             } else if (state is LoginUserSuccessStateUnverified) {
               longTimeSnackBar(
                 context,
@@ -49,91 +38,125 @@ class _LoginScreenState extends State<LoginScreen> {
             } else if (state is LoginUserFailureState) {
               longTimeSnackBar(context, content: state.e);
             } else if (state is LoginUserFailureInvalidEmailState) {
-              longTimeSnackBar(context, content: state.e);
+              shortTimeSnackBar(context, content: state.e);
             } else if (state is LoginUserFailureWrongCredentialsState) {
-              longTimeSnackBar(context, content: state.e);
+              shortTimeSnackBar(context, content: state.e);
             } else if (state is LoginUserFailureEmptyFields) {
-              longTimeSnackBar(context, content: state.e);
+              shortTimeSnackBar(context, content: state.e);
             }
           },
-          child: Column(
-            children: [
-              const SizedBox(height: 36),
-              textField(
-                controller: _emailController,
-                hintText: 'Email Address..',
-                keyboardType: TextInputType.emailAddress,
-                fillColor: quaternaryColor,
-                filled: true,
-                borderSide: BorderSide.none,
-              ),
-              const SizedBox(height: 24),
-              textField(
-                controller: _passwordController,
-                hintText: 'Password..',
-                keyboardType: TextInputType.visiblePassword,
-                isObscure: true,
-                fillColor: quaternaryColor,
-                filled: true,
-                borderSide: BorderSide.none,
-              ),
-              const SizedBox(height: 24),
-              BlocBuilder<LoginUserBloc, LoginUserState>(
-                builder: (context, state) {
-                  return state.isLoading == false
-                      ? submitButton(
-                          context,
-                          label: 'Login',
-                          buttonColor: secondaryColor,
-                          textColor: tertiaryColor,
-                          onTap: () {
-                            context.read<LoginUserBloc>().add(
-                                  LoggedInUserEvent(
-                                    email: _emailController.text,
-                                    password: _passwordController.text,
-                                    context: context,
-                                  ),
-                                );
-                          },
-                        )
-                      : const SizedBox(
-                          height: 56,
-                          child: Center(
-                            child: CircularProgressIndicator(),
-                          ),
-                        );
-                },
-              ),
-              const SizedBox(height: 24),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Text(
-                    'Don\'t have an account? ',
-                    style: TextStyle(
-                      color: secondTextColor,
-                      fontWeight: FontWeight.w500,
-                    ),
+          child: SafeArea(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 96),
+                Padding(
+                  padding: const EdgeInsets.only(left: 16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Image.asset(
+                        'assets/logos/logo-mini-no-bg.png',
+                        width: 96,
+                        height: 96,
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        'Welcome back,',
+                        style: TextStyle(
+                          color: secondaryColor,
+                          fontSize: 24,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      Text(
+                        'Track your incomes and expenses and don\'t loose control!',
+                        style: TextStyle(
+                          color: Colors.grey.shade600,
+                          fontSize: 15,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      const SizedBox(height: 48),
+                    ],
                   ),
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.pushReplacementNamed(
-                        context,
-                        '/register',
-                      );
-                    },
-                    child: Text(
-                      'Register now.',
+                ),
+                textField(
+                  controller: _emailController,
+                  hintText: 'Email Address..',
+                  keyboardType: TextInputType.emailAddress,
+                  fillColor: quaternaryColor,
+                  filled: true,
+                  borderSide: BorderSide.none,
+                ),
+                const SizedBox(height: 24),
+                textField(
+                  controller: _passwordController,
+                  hintText: 'Password..',
+                  keyboardType: TextInputType.visiblePassword,
+                  isObscure: true,
+                  fillColor: quaternaryColor,
+                  filled: true,
+                  borderSide: BorderSide.none,
+                ),
+                const SizedBox(height: 24),
+                BlocBuilder<LoginUserBloc, LoginUserState>(
+                  builder: (context, state) {
+                    return state.isLoading == false
+                        ? submitButton(
+                            context,
+                            label: 'Login',
+                            buttonColor: secondaryColor,
+                            textColor: tertiaryColor,
+                            onTap: () {
+                              context.read<LoginUserBloc>().add(
+                                    LoggedInUserEvent(
+                                      email: _emailController.text,
+                                      password: _passwordController.text,
+                                      context: context,
+                                    ),
+                                  );
+                            },
+                          )
+                        : const SizedBox(
+                            height: 56,
+                            child: Center(
+                              child: CircularProgressIndicator(),
+                            ),
+                          );
+                  },
+                ),
+                const SizedBox(height: 24),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      'Don\'t have an account? ',
                       style: TextStyle(
                         color: secondTextColor,
-                        fontWeight: FontWeight.bold,
+                        fontWeight: FontWeight.w500,
                       ),
                     ),
-                  ),
-                ],
-              )
-            ],
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.pushReplacementNamed(
+                          context,
+                          '/register',
+                        );
+                      },
+                      child: Text(
+                        'Register now.',
+                        style: TextStyle(
+                          color: secondTextColor,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
+                )
+              ],
+            ),
           ),
         ),
       ),
