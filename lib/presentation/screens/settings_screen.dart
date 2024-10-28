@@ -41,7 +41,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 if (state is UpdateBudgetSuccessState) {
                   context.read<CombinedCubit>().getIncomesAndExpenses();
                   context.read<BudgetCubit>().getBudgetValue();
-                  snackBar(context, content: 'Budget updated successfully!');
+                  shortTimeSnackBar(context, content: 'Budget updated successfully!');
                 }
               },
             ),
@@ -65,6 +65,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   child: GestureDetector(
                     onTap: () {
                       context.read<BudgetCubit>().updateBudget(newBudgetController: _newBudgetController);
+                      context.read<BudgetCubit>().getBudgetValue();
                       Navigator.pop(context);
                     },
                     child: Image.asset(

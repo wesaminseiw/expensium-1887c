@@ -13,7 +13,7 @@ class VerifyEmailScreen extends StatelessWidget {
     return BlocListener<UserActionsCubit, UserActionsState>(
       listener: (context, state) {
         if (state is UserActionsUserIsDeletedOrSignedOutState) {
-          snackBar(
+          longTimeSnackBar(
             context,
             content: 'User is either deleted or signed out',
           );
@@ -23,18 +23,18 @@ class VerifyEmailScreen extends StatelessWidget {
             (route) => false,
           );
         } else if (state is UserActionsNotVerifiedState) {
-          snackBar(
+          shortTimeSnackBar(
             context,
             content: 'Not verified yet!',
           );
         } else if (state is UserActionsVerifiedState) {
-          snackBar(
+          shortTimeSnackBar(
             context,
             content: 'Verified!',
           );
           Navigator.pushReplacementNamed(context, '/add_budget');
         } else if (state is UserActionsDeleteUserSuccessState) {
-          snackBar(
+          shortTimeSnackBar(
             context,
             content: 'Deleted account successfully!',
           );

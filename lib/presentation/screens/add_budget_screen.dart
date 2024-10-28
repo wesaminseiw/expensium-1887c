@@ -29,17 +29,17 @@ class _AddBudgetScreenState extends State<AddBudgetScreen> {
           setState(() {
             isLoading = false;
           });
-          snackBar(context, content: 'Added budget successfully!');
+          longTimeSnackBar(context, content: 'Added budget successfully!');
         } else if (state is AddBudgetFailureState) {
           setState(() {
             isLoading = false;
           });
-          snackBar(context, content: 'Failed to add budget, try again later.');
+          longTimeSnackBar(context, content: 'Failed to add budget, try again later.');
         } else if (state is AddBudgetFailureEmptyFieldsState) {
           setState(() {
             isLoading = false;
           });
-          snackBar(context, content: 'Budget cannot be empty!');
+          longTimeSnackBar(context, content: 'Budget cannot be empty!');
         }
       },
       child: GestureDetector(

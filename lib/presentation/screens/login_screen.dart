@@ -40,20 +40,20 @@ class _LoginScreenState extends State<LoginScreen> {
           listener: (context, state) {
             if (state is LoginUserLoadingState) {
             } else if (state is LoginUserSuccessStateVerified) {
-              snackBar(context, content: 'Logged in successfully!');
+              longTimeSnackBar(context, content: 'Logged in successfully!');
             } else if (state is LoginUserSuccessStateUnverified) {
-              snackBar(
+              longTimeSnackBar(
                 context,
                 content: 'Logged in successfully but you need to verify your email to continue!',
               );
             } else if (state is LoginUserFailureState) {
-              snackBar(context, content: state.e);
+              longTimeSnackBar(context, content: state.e);
             } else if (state is LoginUserFailureInvalidEmailState) {
-              snackBar(context, content: state.e);
+              longTimeSnackBar(context, content: state.e);
             } else if (state is LoginUserFailureWrongCredentialsState) {
-              snackBar(context, content: state.e);
+              longTimeSnackBar(context, content: state.e);
             } else if (state is LoginUserFailureEmptyFields) {
-              snackBar(context, content: state.e);
+              longTimeSnackBar(context, content: state.e);
             }
           },
           child: Column(
@@ -97,11 +97,11 @@ class _LoginScreenState extends State<LoginScreen> {
                           },
                         )
                       : const SizedBox(
-                        height: 56,
-                        child: Center(
+                          height: 56,
+                          child: Center(
                             child: CircularProgressIndicator(),
                           ),
-                      );
+                        );
                 },
               ),
               const SizedBox(height: 24),

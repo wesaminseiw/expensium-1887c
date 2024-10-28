@@ -44,27 +44,27 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 isLoading = true;
               });
             } else if (state is RegisterUserSuccessState) {
-              snackBar(context, content: 'Registered successfully!');
+              longTimeSnackBar(context, content: 'Registered successfully!');
               setState(() {
                 isLoading = false;
               });
             } else if (state is RegisterUserFailureState) {
-              snackBar(context, content: state.e);
+              longTimeSnackBar(context, content: state.e);
               setState(() {
                 isLoading = false;
               });
             } else if (state is RegisterUserFailureEmailExistsState) {
-              snackBar(context, content: state.e);
+              longTimeSnackBar(context, content: state.e);
               setState(() {
                 isLoading = false;
               });
             } else if (state is RegisterUserFailureInvalidEmailState) {
-              snackBar(context, content: state.e);
+              longTimeSnackBar(context, content: state.e);
               setState(() {
                 isLoading = false;
               });
             } else if (state is RegisterUserFailureInvalidPasswordState) {
-              snackBar(
+              longTimeSnackBar(
                 context,
                 content: state.e,
               );
@@ -72,12 +72,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 isLoading = false;
               });
             } else if (state is RegisterUserFailureEmptyFields) {
-              snackBar(context, content: state.e);
+              longTimeSnackBar(context, content: state.e);
               setState(() {
                 isLoading = false;
               });
             } else if (state is RegisterUserFailurePasswordRequirementsState) {
-              snackBar(context, content: state.e);
+              longTimeSnackBar(context, content: state.e);
               setState(() {
                 isLoading = false;
               });

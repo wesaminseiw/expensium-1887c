@@ -1,4 +1,4 @@
-import 'dart:math';
+import 'dart:math' show pi;
 import 'package:expensium/data/models/expense_model.dart';
 import 'package:expensium/data/models/income_model.dart';
 import 'package:expensium/logic/cubits/budget_cubit/budget_cubit.dart';
@@ -9,6 +9,7 @@ import 'package:expensium/logic/cubits/get_weekly_budget_cubit/get_weekly_budget
 import 'package:expensium/logic/cubits/income_cubit/income_cubit.dart';
 import 'package:expensium/logic/cubits/user_actions_cubit/user_actions_cubit.dart';
 import 'package:expensium/presentation/styles/colors.dart';
+import 'package:expensium/presentation/widgets/custom_bottom_appbar.dart';
 import 'package:expensium/presentation/widgets/snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -21,14 +22,14 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // context.read<BudgetCubit>().startDebugTimer();
     context.read<GetDisplayNameCubit>().getDisplayName();
     context.read<BudgetCubit>().getBudgetValue();
     context.read<GetWeeklyBudgetCubit>().getWeeklyDifference();
     context.read<CombinedCubit>().getIncomesAndExpenses();
     context.read<IncomeCubit>().fetchWeeklyIncomes();
     context.read<ExpenseCubit>().fetchWeeklyExpenses();
-    // context.read<BudgetCubit>().calculateBudgetChange();
+
+    int currentIndex = 0;
 
     return MultiBlocListener(
       listeners: [
@@ -39,7 +40,7 @@ class HomeScreen extends StatelessWidget {
               context.read<BudgetCubit>().getBudgetValue();
               context.read<GetWeeklyBudgetCubit>().getWeeklyDifference();
               // context.read<BudgetCubit>().calculateBudgetChange();
-              snackBar(context, content: 'Income deleted successfully!');
+              shortTimeSnackBar(context, content: 'Income deleted successfully!');
             } else if (state is AddIncomeSuccessState) {
               context.read<CombinedCubit>().getIncomesAndExpenses();
               context.read<BudgetCubit>().getBudgetValue();
@@ -55,7 +56,7 @@ class HomeScreen extends StatelessWidget {
               context.read<BudgetCubit>().getBudgetValue();
               context.read<GetWeeklyBudgetCubit>().getWeeklyDifference();
               // context.read<BudgetCubit>().calculateBudgetChange();
-              snackBar(context, content: 'Expense deleted successfully!');
+              shortTimeSnackBar(context, content: 'Expense deleted successfully!');
             } else if (state is AddExpenseSuccessState) {
               context.read<CombinedCubit>().getIncomesAndExpenses();
               context.read<BudgetCubit>().getBudgetValue();
@@ -718,7 +719,7 @@ class HomeScreen extends StatelessWidget {
                           ],
                         ),
                       ),
-                const SizedBox(height: 100),
+                const SizedBox(height: 48),
               ],
             );
           },
@@ -726,6 +727,7 @@ class HomeScreen extends StatelessWidget {
         floatingActionButton: SpeedDial(
           iconTheme: IconThemeData(color: quaternaryColor, size: 30),
           backgroundColor: secondaryColor,
+          buttonSize: const Size(65, 65),
           children: [
             SpeedDialChild(
               child: const Icon(Icons.money_off),
@@ -754,21 +756,14 @@ class HomeScreen extends StatelessWidget {
               },
             ),
           ],
-          label: Text(
-            'Add',
-            style: TextStyle(
-              color: tertiaryColor,
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
           child: Image.asset(
             'assets/images/money.png',
             width: 40,
             height: 40,
           ),
         ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+        bottomNavigationBar: CustomBottomAppBar(currentIndex: currentIndex),
       ),
     );
   }

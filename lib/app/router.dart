@@ -1,6 +1,7 @@
 import 'package:expensium/presentation/screens/add_budget_screen.dart';
 import 'package:expensium/presentation/screens/add_expense_screen.dart';
 import 'package:expensium/presentation/screens/add_income_screen.dart';
+import 'package:expensium/presentation/screens/calculator_screen.dart';
 import 'package:expensium/presentation/screens/settings_screen.dart';
 import 'package:flutter/material.dart';
 import '../presentation/screens/home_screen.dart';
@@ -42,6 +43,10 @@ class AppRouter {
       case '/settings':
         return MaterialPageRoute(
           builder: (context) => const SettingsScreen(),
+        );
+      case '/calculator':
+        return MaterialPageRoute(
+          builder: (context) => const CalculatorScreen(),
         );
       default:
         return MaterialPageRoute(

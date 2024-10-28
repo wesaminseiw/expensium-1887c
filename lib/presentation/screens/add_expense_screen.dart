@@ -28,17 +28,17 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
     return BlocConsumer<ExpenseCubit, ExpenseState>(
       listener: (context, state) {
         if (state is AddExpenseSuccessState) {
-          snackBar(context, content: 'Added expense successfully!');
+          shortTimeSnackBar(context, content: 'Added expense successfully!');
           Navigator.pop(context);
           context.read<BudgetCubit>().getBudgetValue();
           context.read<CombinedCubit>().getIncomesAndExpenses();
           context.read<GetWeeklyBudgetCubit>().getWeeklyDifference();
         } else if (state is AddExpenseFailureState) {
-          snackBar(context, content: 'Failed to add expense!');
+          shortTimeSnackBar(context, content: 'Failed to add expense!');
         } else if (state is AddExpenseFailureEmptyFieldsState) {
-          snackBar(context, content: 'The fields above cannot be empty!');
+          shortTimeSnackBar(context, content: 'The fields above cannot be empty!');
         } else if (state is AddExpenseFailureNoSufficientFundsState) {
-          snackBar(
+          shortTimeSnackBar(
             context,
             content: 'The expense amount is larger than your budget!',
           );

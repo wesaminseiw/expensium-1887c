@@ -28,15 +28,15 @@ class _AddIncomeScreenState extends State<AddIncomeScreen> {
     return BlocConsumer<IncomeCubit, IncomeState>(
       listener: (context, state) {
         if (state is AddIncomeSuccessState) {
-          snackBar(context, content: 'Added income successfully!');
+          shortTimeSnackBar(context, content: 'Added income successfully!');
           Navigator.pop(context);
           context.read<BudgetCubit>().getBudgetValue();
           context.read<CombinedCubit>().getIncomesAndExpenses();
           context.read<GetWeeklyBudgetCubit>().getWeeklyDifference();
         } else if (state is AddIncomeFailureState) {
-          snackBar(context, content: 'Failed to add income!');
+          shortTimeSnackBar(context, content: 'Failed to add income!');
         } else if (state is AddIncomeFailureEmptyFieldsState) {
-          snackBar(context, content: 'The fields above cannot be empty!');
+          shortTimeSnackBar(context, content: 'The fields above cannot be empty!');
         }
       },
       builder: (context, state) {
