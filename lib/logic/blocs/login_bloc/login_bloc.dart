@@ -18,18 +18,10 @@ class LoginUserBloc extends Bloc<LoginUserEvent, LoginUserState> {
           if (FirebaseAuth.instance.currentUser!.emailVerified) {
             log('========= NAVIGATING TO HOME =========');
             emit(LoginUserSuccessStateVerified(isLoading: false));
-            Navigator.pushReplacementNamed(
-              event.context,
-              '/home',
-            );
           } else {
             log('========= NAVIGATING TO VERIFY =========');
             await FirebaseAuth.instance.currentUser!.sendEmailVerification();
             emit(LoginUserSuccessStateUnverified(isLoading: false));
-            Navigator.pushReplacementNamed(
-              event.context,
-              '/verify',
-            );
           }
           log('========= SUCCESS =========');
         } on FirebaseAuthException catch (e) {

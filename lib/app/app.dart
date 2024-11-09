@@ -8,6 +8,7 @@ import 'package:expensium/presentation/screens/splash_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get/get.dart';
 import '../logic/blocs/login_bloc/login_bloc.dart';
 import '../logic/blocs/register_bloc/register_bloc.dart';
 import '../logic/cubits/user_actions_cubit/user_actions_cubit.dart';
@@ -21,7 +22,6 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  final AppRouter _appRouter = AppRouter();
   late final IncomeCubit _incomeCubit;
   late final ExpenseCubit _expenseCubit;
 
@@ -55,14 +55,14 @@ class _MyAppState extends State<MyApp> {
         stream: FirebaseAuth.instance.authStateChanges(),
         builder: (context, snapshot) {
           FirebaseAuth.instance.currentUser?.reload();
-          return MaterialApp(
+          return GetMaterialApp(
             debugShowCheckedModeBanner: false,
             title: 'expensium',
             theme: ThemeData(
               fontFamily: 'WorkSans',
             ),
             home: const SplashScreen(),
-            onGenerateRoute: _appRouter.onGenerateRoute,
+            getPages: AppRouter.routes,
           );
         },
       ),

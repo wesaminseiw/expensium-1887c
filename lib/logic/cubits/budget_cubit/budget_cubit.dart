@@ -1,12 +1,6 @@
 import 'dart:developer';
 import 'dart:async'; // To use Timer
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:expensium/logic/cubits/expense_cubit/expense_cubit.dart';
-import 'package:expensium/logic/cubits/income_cubit/income_cubit.dart';
-// import 'package:expensium/app/utils/extensions.dart';
-// import 'package:expensium/logic/cubits/expense_cubit/expense_cubit.dart';
-// import 'package:expensium/logic/cubits/income_cubit/income_cubit.dart';
-import 'package:expensium/presentation/screens/home_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -41,12 +35,6 @@ class BudgetCubit extends Cubit<BudgetState> {
 
         final budget = await getBudgetValue();
 
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => const HomeScreen(),
-          ),
-        );
         // await calculateBudgetChange();
         emit(AddBudgetSuccessState(budget: budget, isLoading: false));
       } catch (e) {

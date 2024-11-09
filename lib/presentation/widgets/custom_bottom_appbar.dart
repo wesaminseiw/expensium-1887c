@@ -1,9 +1,10 @@
 import 'dart:developer';
-import 'package:expensium/presentation/screens/calculator_screen.dart';
-import 'package:expensium/presentation/screens/home_screen.dart';
+import 'package:expensium/app/router.dart';
+import 'package:expensium/app/utils/constants.dart';
 import 'package:expensium/presentation/styles/colors.dart';
 import 'package:flutter/material.dart';
 
+// ignore: must_be_immutable
 class CustomBottomAppBar extends StatefulWidget {
   int currentIndex;
   CustomBottomAppBar({
@@ -16,17 +17,6 @@ class CustomBottomAppBar extends StatefulWidget {
 }
 
 class _CustomBottomAppBarState extends State<CustomBottomAppBar> {
-  void _navigateWithoutAnimation(BuildContext context, String route) {
-    Navigator.of(context).pushAndRemoveUntil(
-      PageRouteBuilder(
-        pageBuilder: (context, animation, secondaryAnimation) => route == '/home' ? const HomeScreen() : const CalculatorScreen(),
-        transitionDuration: Duration.zero,
-        reverseTransitionDuration: Duration.zero,
-      ),
-      (route) => false,
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return BottomAppBar(
@@ -53,7 +43,7 @@ class _CustomBottomAppBarState extends State<CustomBottomAppBar> {
                         setState(() {
                           widget.currentIndex = 0;
                         });
-                        _navigateWithoutAnimation(context, '/home');
+                        AppRouter.offAllNavigateWithoutAnimation(homeRoute);
                         log('=== HOME ===');
                       },
                     ),
@@ -77,7 +67,7 @@ class _CustomBottomAppBarState extends State<CustomBottomAppBar> {
                         setState(() {
                           widget.currentIndex = 1;
                         });
-                        _navigateWithoutAnimation(context, '/calculator');
+                        AppRouter.offAllNavigateWithoutAnimation(calculatorRoute);
                         log('=== CALCULATOR ===');
                       },
                     ),

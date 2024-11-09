@@ -1,4 +1,6 @@
+import 'package:expensium/app/router.dart';
 import 'package:expensium/presentation/styles/colors.dart';
+import 'package:expensium/presentation/widgets/circular_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../logic/blocs/login_bloc/login_bloc.dart';
@@ -30,11 +32,13 @@ class _LoginScreenState extends State<LoginScreen> {
             if (state is LoginUserLoadingState) {
             } else if (state is LoginUserSuccessStateVerified) {
               shortTimeSnackBar(context, content: 'Logged in successfully!');
+              AppRouter.offHome();
             } else if (state is LoginUserSuccessStateUnverified) {
               longTimeSnackBar(
                 context,
                 content: 'Logged in successfully but you need to verify your email to continue!',
               );
+              AppRouter.offVerifyEmail();
             } else if (state is LoginUserFailureState) {
               longTimeSnackBar(context, content: state.e);
             } else if (state is LoginUserFailureInvalidEmailState) {
@@ -118,12 +122,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   );
                             },
                           )
-                        : const SizedBox(
-                            height: 56,
-                            child: Center(
-                              child: CircularProgressIndicator(),
-                            ),
-                          );
+                        : loading();
                   },
                 ),
                 const SizedBox(height: 24),
@@ -140,10 +139,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     GestureDetector(
                       onTap: () {
-                        Navigator.pushReplacementNamed(
-                          context,
-                          '/register',
-                        );
+                        AppRouter.offRegister();
                       },
                       child: Text(
                         'Register now.',

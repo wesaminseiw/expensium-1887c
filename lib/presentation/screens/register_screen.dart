@@ -1,11 +1,12 @@
+import 'package:expensium/app/router.dart';
 import 'package:expensium/presentation/styles/colors.dart';
+import 'package:expensium/presentation/widgets/circular_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../logic/blocs/register_bloc/register_bloc.dart';
 import '../widgets/snackbar.dart';
 import '../widgets/submit_button.dart';
 import '../widgets/textfield.dart';
-import 'login_screen.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -17,7 +18,6 @@ class RegisterScreen extends StatefulWidget {
 class _RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  bool isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -29,47 +29,24 @@ class _RegisterScreenState extends State<RegisterScreen> {
         body: BlocListener<RegisterUserBloc, RegisterUserState>(
           listener: (context, state) {
             if (state is RegisterUserLoadingState) {
-              setState(() {
-                isLoading = true;
-              });
             } else if (state is RegisterUserSuccessState) {
               shortTimeSnackBar(context, content: 'Registered successfully!');
-              setState(() {
-                isLoading = false;
-              });
+              AppRouter.offVerifyEmail();
             } else if (state is RegisterUserFailureState) {
               longTimeSnackBar(context, content: state.e);
-              setState(() {
-                isLoading = false;
-              });
             } else if (state is RegisterUserFailureEmailExistsState) {
               shortTimeSnackBar(context, content: state.e);
-              setState(() {
-                isLoading = false;
-              });
             } else if (state is RegisterUserFailureInvalidEmailState) {
               shortTimeSnackBar(context, content: state.e);
-              setState(() {
-                isLoading = false;
-              });
             } else if (state is RegisterUserFailureInvalidPasswordState) {
               shortTimeSnackBar(
                 context,
                 content: state.e,
               );
-              setState(() {
-                isLoading = false;
-              });
             } else if (state is RegisterUserFailureEmptyFields) {
               shortTimeSnackBar(context, content: state.e);
-              setState(() {
-                isLoading = false;
-              });
             } else if (state is RegisterUserFailurePasswordRequirementsState) {
               shortTimeSnackBar(context, content: state.e);
-              setState(() {
-                isLoading = false;
-              });
             }
           },
           child: SafeArea(
@@ -145,12 +122,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                   );
                             },
                           )
-                        : const SizedBox(
-                            height: 56,
-                            child: Center(
-                              child: CircularProgressIndicator(),
-                            ),
-                          );
+                        : loading();
                   },
                 ),
                 const SizedBox(height: 24),
@@ -167,12 +139,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                     GestureDetector(
                       onTap: () {
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const LoginScreen(),
-                          ),
-                        );
+                        AppRouter.offLogin();
                       },
                       child: Text(
                         'Login.',

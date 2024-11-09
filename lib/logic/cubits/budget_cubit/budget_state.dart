@@ -39,6 +39,7 @@ class GetBudgetLoadingState extends BudgetState {
   });
 }
 
+// ignore: must_be_immutable
 class GetBudgetSuccessState extends BudgetState {
   double? budgetChange;
   GetBudgetSuccessState({

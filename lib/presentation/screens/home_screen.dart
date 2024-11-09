@@ -1,4 +1,5 @@
 import 'dart:math' show pi;
+import 'package:expensium/app/router.dart';
 import 'package:expensium/data/models/expense_model.dart';
 import 'package:expensium/data/models/income_model.dart';
 import 'package:expensium/logic/cubits/budget_cubit/budget_cubit.dart';
@@ -9,6 +10,7 @@ import 'package:expensium/logic/cubits/get_weekly_budget_cubit/get_weekly_budget
 import 'package:expensium/logic/cubits/income_cubit/income_cubit.dart';
 import 'package:expensium/logic/cubits/user_actions_cubit/user_actions_cubit.dart';
 import 'package:expensium/presentation/styles/colors.dart';
+import 'package:expensium/presentation/widgets/circular_indicator.dart';
 import 'package:expensium/presentation/widgets/custom_bottom_appbar.dart';
 import 'package:expensium/presentation/widgets/snackbar.dart';
 import 'package:flutter/material.dart';
@@ -68,7 +70,7 @@ class HomeScreen extends StatelessWidget {
         BlocListener<UserActionsCubit, UserActionsState>(
           listener: (context, state) {
             if (state is UserActionsDeleteUserSuccessState) {
-              Navigator.pushReplacementNamed(context, '/login');
+              AppRouter.offLogin();
             }
           },
         ),
@@ -86,10 +88,7 @@ class HomeScreen extends StatelessWidget {
           actions: [
             GestureDetector(
               onTap: () {
-                Navigator.pushNamed(
-                  context,
-                  '/settings',
-                );
+                AppRouter.toSettings();
               },
               child: Padding(
                 padding: const EdgeInsets.only(right: 16),
@@ -394,7 +393,7 @@ class HomeScreen extends StatelessWidget {
                                                                             amount: data.amount,
                                                                           );
                                                                       context.read<CombinedCubit>().getIncomesAndExpenses();
-                                                                      Navigator.of(context).pop();
+                                                                      AppRouter.pop();
                                                                     },
                                                                     child: Text(
                                                                       'Delete',
@@ -556,7 +555,7 @@ class HomeScreen extends StatelessWidget {
                                                                             amount: data.amount,
                                                                           );
                                                                       context.read<CombinedCubit>().getIncomesAndExpenses();
-                                                                      Navigator.of(context).pop();
+                                                                      AppRouter.pop();
                                                                     },
                                                                     child: Text(
                                                                       'Delete',
@@ -668,8 +667,8 @@ class HomeScreen extends StatelessWidget {
                                     );
                                   }
                                 } else if (state is CombinedLoadingState) {
-                                  const Center(
-                                    child: CircularProgressIndicator(),
+                                  Center(
+                                    child: loading(),
                                   );
                                 }
                                 return Center(
@@ -710,12 +709,12 @@ class HomeScreen extends StatelessWidget {
                           ],
                         ),
                       )
-                    : const Expanded(
+                    : Expanded(
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            CircularProgressIndicator(),
+                            loading(),
                           ],
                         ),
                       ),
@@ -739,7 +738,7 @@ class HomeScreen extends StatelessWidget {
                 fontWeight: FontWeight.w600,
               ),
               onTap: () {
-                Navigator.pushNamed(context, '/add_expense');
+                AppRouter.toAddExpense();
               },
             ),
             SpeedDialChild(
@@ -752,7 +751,7 @@ class HomeScreen extends StatelessWidget {
                 fontWeight: FontWeight.w600,
               ),
               onTap: () {
-                Navigator.pushNamed(context, '/add_income');
+                AppRouter.toAddIncome();
               },
             ),
           ],

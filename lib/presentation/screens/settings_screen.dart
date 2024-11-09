@@ -1,7 +1,9 @@
+import 'package:expensium/app/router.dart';
 import 'package:expensium/logic/cubits/budget_cubit/budget_cubit.dart';
 import 'package:expensium/logic/cubits/combined_cubit/combined_cubit.dart';
 import 'package:expensium/logic/cubits/user_actions_cubit/user_actions_cubit.dart';
 import 'package:expensium/presentation/styles/colors.dart';
+import 'package:expensium/presentation/widgets/circular_indicator.dart';
 import 'package:expensium/presentation/widgets/snackbar.dart';
 import 'package:expensium/presentation/widgets/submit_button.dart';
 import 'package:expensium/presentation/widgets/textfield.dart';
@@ -27,9 +29,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
           listeners: [
             BlocListener<UserActionsCubit, UserActionsState>(
               listener: (context, state) {
-                if (state is UserActionsSignOutSuccessState || state is UserActionsDeleteUserSuccessState) {
-                  Navigator.pop(context);
-                  Navigator.pushReplacementNamed(context, '/login');
+                if (state is UserActionsDeleteUserSuccessState) {
+                  AppRouter.pop();
+                  AppRouter.offLogin();
+                } else if (state is UserActionsSignOutSuccessState) {
+                  AppRouter.pop();
+                  AppRouter.offLogin();
                 }
               },
             ),
@@ -53,7 +58,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   padding: const EdgeInsets.only(left: 16, right: 8),
                   child: GestureDetector(
                     onTap: () {
-                      Navigator.pop(context);
+                      AppRouter.pop();
                     },
                     child: Image.asset(
                       'assets/images/home.png',
@@ -135,13 +140,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           ),
                           const SizedBox(height: 20),
                           Center(
-                            child: submitButton(
-                              context,
-                              buttonColor: secondaryColor,
-                              textColor: tertiaryColor,
-                              label: 'Save',
-                              onTap: () {
-                                context.read<BudgetCubit>().updateBudget(newBudgetController: _newBudgetController);
+                            child: BlocBuilder<BudgetCubit, BudgetState>(
+                              builder: (context, state) {
+                                return state is UpdateBudgetLoadingState
+                                    ? loading()
+                                    : submitButton(
+                                        context,
+                                        buttonColor: secondaryColor,
+                                        textColor: tertiaryColor,
+                                        label: 'Save',
+                                        onTap: () {
+                                          context.read<BudgetCubit>().updateBudget(newBudgetController: _newBudgetController);
+                                        },
+                                      );
                               },
                             ),
                           ),
@@ -176,45 +187,57 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             ),
                           ),
                           const SizedBox(height: 24),
-                          submitButton(
-                            context,
-                            buttonColor: secondaryColor,
-                            textColor: tertiaryColor,
-                            label: 'Logout',
-                            onTap: () {
-                              context.read<UserActionsCubit>().signOut(context);
+                          BlocBuilder<BudgetCubit, BudgetState>(
+                            builder: (context, state) {
+                              return state is UserActionsSignOutLoadingState
+                                  ? loading()
+                                  : submitButton(
+                                      context,
+                                      buttonColor: secondaryColor,
+                                      textColor: tertiaryColor,
+                                      label: 'Logout',
+                                      onTap: () {
+                                        context.read<UserActionsCubit>().signOut(context);
+                                      },
+                                    );
                             },
                           ),
                           const SizedBox(height: 16),
                           // Delete Account Button with modified design
-                          submitButton(
-                            context,
-                            buttonColor: const Color.fromARGB(255, 169, 0, 0),
-                            textColor: tertiaryColor,
-                            label: 'DELETE ACCOUNT',
-                            onTap: () {
-                              showDialog(
-                                context: context,
-                                builder: (context) {
-                                  return AlertDialog(
-                                    title: const Text('Delete Account'),
-                                    content: const Text('Are you sure you want to delete your account? This action cannot be undone.'),
-                                    actions: [
-                                      TextButton(
-                                        onPressed: () => Navigator.of(context).pop(),
-                                        child: const Text('Cancel'),
-                                      ),
-                                      TextButton(
-                                        onPressed: () async {
-                                          Navigator.of(context).pop();
-                                          await context.read<UserActionsCubit>().deleteUser(context);
-                                        },
-                                        child: const Text('Yes'),
-                                      ),
-                                    ],
-                                  );
-                                },
-                              );
+                          BlocBuilder<BudgetCubit, BudgetState>(
+                            builder: (context, state) {
+                              return state is UserActionsDeleteUserLoadingState || state is UserActionsDeleteUserDataLoadingState
+                                  ? loading()
+                                  : submitButton(
+                                      context,
+                                      buttonColor: const Color.fromARGB(255, 169, 0, 0),
+                                      textColor: tertiaryColor,
+                                      label: 'DELETE ACCOUNT',
+                                      onTap: () {
+                                        showDialog(
+                                          context: context,
+                                          builder: (context) {
+                                            return AlertDialog(
+                                              title: const Text('Delete Account'),
+                                              content: const Text('Are you sure you want to delete your account? This action cannot be undone.'),
+                                              actions: [
+                                                TextButton(
+                                                  onPressed: () => AppRouter.pop(),
+                                                  child: const Text('Cancel'),
+                                                ),
+                                                TextButton(
+                                                  onPressed: () async {
+                                                    AppRouter.pop();
+                                                    await context.read<UserActionsCubit>().deleteUser(context);
+                                                  },
+                                                  child: const Text('Yes'),
+                                                ),
+                                              ],
+                                            );
+                                          },
+                                        );
+                                      },
+                                    );
                             },
                           ),
                         ],

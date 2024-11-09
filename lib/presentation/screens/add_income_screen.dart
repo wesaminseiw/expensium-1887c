@@ -1,8 +1,10 @@
+import 'package:expensium/app/router.dart';
 import 'package:expensium/logic/cubits/combined_cubit/combined_cubit.dart';
 import 'package:expensium/logic/cubits/get_weekly_budget_cubit/get_weekly_budget_cubit.dart';
 import 'package:expensium/logic/cubits/income_cubit/income_cubit.dart';
 import 'package:expensium/logic/cubits/budget_cubit/budget_cubit.dart';
 import 'package:expensium/presentation/styles/colors.dart';
+import 'package:expensium/presentation/widgets/circular_indicator.dart';
 import 'package:expensium/presentation/widgets/snackbar.dart';
 import 'package:expensium/presentation/widgets/submit_button.dart';
 import 'package:expensium/presentation/widgets/textfield.dart';
@@ -29,7 +31,7 @@ class _AddIncomeScreenState extends State<AddIncomeScreen> {
       listener: (context, state) {
         if (state is AddIncomeSuccessState) {
           shortTimeSnackBar(context, content: 'Added income successfully!');
-          Navigator.pop(context);
+          AppRouter.pop();
           context.read<BudgetCubit>().getBudgetValue();
           context.read<CombinedCubit>().getIncomesAndExpenses();
           context.read<GetWeeklyBudgetCubit>().getWeeklyDifference();
@@ -52,7 +54,7 @@ class _AddIncomeScreenState extends State<AddIncomeScreen> {
                       padding: const EdgeInsets.only(left: 16, right: 8),
                       child: GestureDetector(
                         onTap: () {
-                          Navigator.pop(context);
+                          AppRouter.pop();
                         },
                         child: Image.asset(
                           'assets/images/home.png',
@@ -164,9 +166,10 @@ class _AddIncomeScreenState extends State<AddIncomeScreen> {
                   ),
                 ),
               )
-            : const Scaffold(
+            : Scaffold(
+                backgroundColor: tertiaryColor,
                 body: Center(
-                  child: CircularProgressIndicator(),
+                  child: loading(),
                 ),
               );
       },

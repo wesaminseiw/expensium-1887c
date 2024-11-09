@@ -1,4 +1,6 @@
+import 'package:expensium/app/router.dart';
 import 'package:expensium/presentation/styles/colors.dart';
+import 'package:expensium/presentation/widgets/circular_indicator.dart';
 import 'package:expensium/presentation/widgets/snackbar.dart';
 import 'package:expensium/presentation/widgets/submit_button.dart';
 import 'package:flutter/material.dart';
@@ -17,11 +19,7 @@ class VerifyEmailScreen extends StatelessWidget {
             context,
             content: 'User is either deleted or signed out',
           );
-          Navigator.pushNamedAndRemoveUntil(
-            context,
-            '/login',
-            (route) => false,
-          );
+          AppRouter.offLogin();
         } else if (state is UserActionsNotVerifiedState) {
           shortTimeSnackBar(
             context,
@@ -32,13 +30,13 @@ class VerifyEmailScreen extends StatelessWidget {
             context,
             content: 'Verified!',
           );
-          Navigator.pushReplacementNamed(context, '/add_budget');
+          AppRouter.offAddBudget();
         } else if (state is UserActionsDeleteUserSuccessState) {
           shortTimeSnackBar(
             context,
             content: 'Deleted account successfully!',
           );
-          Navigator.pushReplacementNamed(context, '/login');
+          AppRouter.offLogin();
         }
       },
       child: Scaffold(
@@ -85,23 +83,29 @@ class VerifyEmailScreen extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 24),
-                    submitButton(
-                      context,
-                      label: 'Check Verification',
-                      buttonColor: secondaryColor,
-                      textColor: tertiaryColor,
-                      onTap: () {
-                        context.read<UserActionsCubit>().checkEmailVerification(context);
+                    BlocBuilder<UserActionsCubit, UserActionsState>(
+                      builder: (context, state) {
+                        return state is UserActionsCheckVerificationLoadingState
+                            ? loading()
+                            : submitButton(
+                                context,
+                                label: 'Check Verification',
+                                buttonColor: secondaryColor,
+                                textColor: tertiaryColor,
+                                onTap: () {
+                                  context.read<UserActionsCubit>().checkEmailVerification(context);
+                                },
+                              );
                       },
                     ),
                     const SizedBox(height: 16),
                     submitButton(
                       context,
-                      label: 'Delete Account',
+                      label: 'Restart',
                       buttonColor: secondaryColor,
                       textColor: tertiaryColor,
-                      onTap: () async {
-                        await context.read<UserActionsCubit>().deleteUser(context);
+                      onTap: () {
+                        AppRouter.offLogin();
                       },
                     ),
                     const SizedBox(height: 48),

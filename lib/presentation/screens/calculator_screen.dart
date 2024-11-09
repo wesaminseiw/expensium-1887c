@@ -5,6 +5,7 @@ import 'package:expensium/data/models/transaction_model.dart';
 import 'package:expensium/logic/cubits/budget_cubit/budget_cubit.dart';
 import 'package:expensium/logic/cubits/combined_cubit/combined_cubit.dart';
 import 'package:expensium/presentation/styles/colors.dart';
+import 'package:expensium/presentation/widgets/circular_indicator.dart';
 import 'package:expensium/presentation/widgets/custom_bottom_appbar.dart';
 import 'package:expensium/presentation/widgets/snackbar.dart';
 import 'package:flutter/material.dart';
@@ -315,8 +316,8 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                                       );
                                     }
                                   } else if (state is CombinedLoadingState) {
-                                    const Center(
-                                      child: CircularProgressIndicator(),
+                                    Center(
+                                      child: loading(),
                                     );
                                   }
                                   return Center(
@@ -355,12 +356,12 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                                 },
                               ),
                             )
-                          : const Expanded(
+                          : Expanded(
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
-                                  CircularProgressIndicator(),
+                                  loading(),
                                 ],
                               ),
                             ),
